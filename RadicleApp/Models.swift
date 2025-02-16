@@ -16,46 +16,47 @@ struct RadicleRepository: Identifiable {
 extension RadicleRepository {
     init(from repoItem: RepoItem) {
         self.id = repoItem.rid
-        self.name = repoItem.payloads.xyzRadicleProject.data.name ?? "Untitled"
+        self.name = repoItem.payloads.xyzRadicleProject?.data.name ?? "Untitled"
     }
 }
 
-struct RepoItem: Identifiable, Codable {
-    let payloads: Payloads
-    let delegates: [DelegateItem]
-    let threshold: Int
-    let visibility: Visibility
-    let rid: String
-    let seeding: Int
-    
-    var id: String { rid }
-}
+//struct RepoItem: Identifiable, Codable {
+//    let payloads: Payloads
+//    let delegates: [DelegateItem]
+//    let threshold: Int
+//    let visibility: Visibility
+//    let rid: String
+//    let seeding: Int
+//    
+//    var id: String { rid }
+//}
 
-struct Payloads: Codable {
-    let xyzRadicleProject: XyzRadicleProject
-    
-    // Map the JSON key "xyz.radicle.project" to our property
-    enum CodingKeys: String, CodingKey {
-        case xyzRadicleProject = "xyz.radicle.project"
-    }
-}
+
+//struct Payloads: Codable {
+//    let xyzRadicleProject: XyzRadicleProject
+//    
+//    // Map the JSON key "xyz.radicle.project" to our property
+//    enum CodingKeys: String, CodingKey {
+//        case xyzRadicleProject = "xyz.radicle.project"
+//    }
+//}
 
 struct XyzRadicleProject: Codable {
     let data: ProjectData
     let meta: ProjectMeta
 }
 
-struct ProjectData: Codable {
-    let defaultBranch: String?
-    let description: String?
-    let name: String?
-}
+//struct ProjectData: Codable {
+//    let defaultBranch: String?
+//    let description: String?
+//    let name: String?
+//}
 
-struct ProjectMeta: Codable {
-    let head: String
-    let issues: Issues
-    let patches: Patches
-}
+//struct ProjectMeta: Codable {
+//    let head: String
+//    let issues: Issues
+//    let patches: Patches
+//}
 
 struct Issues: Codable {
     let open: Int
@@ -69,14 +70,14 @@ struct Patches: Codable {
     let merged: Int
 }
 
-struct DelegateItem: Codable {
-    let id: String
-    let alias: String
-}
-
-struct Visibility: Codable {
-    let type: String
-}
+//struct DelegateItem: Codable {
+//    let id: String
+//    let alias: String
+//}
+//
+//struct Visibility: Codable {
+//    let type: String
+//}
 
 struct RadicleErrorMessage: Identifiable {
     let message: String
