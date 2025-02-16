@@ -3,4 +3,4 @@ iOS app for interacting with Radicle repositories.
 
 Currently looks like this:
 
-![](./resources/userFlow.png)
+![](./resources/image.png)

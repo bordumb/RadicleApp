@@ -23,7 +23,7 @@ struct IssueDetailView: View {
                         Text(issue.title)
                             .font(.headline)
                         
-                        Text("Status: \(issue.state.status)")
+                        Text("Status: \(issue.state.status.capitalized)")
                             .foregroundColor(.secondary)
                         
                         Text("Author: \(issue.author.alias ?? issue.author.id)")
