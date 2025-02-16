@@ -9,52 +9,14 @@ import Foundation
 import Combine
 
 class NetworkService {
-    
     static let shared = NetworkService()
     private init() {}
     
-    func fetchRepositories(completion: @escaping (Result<[RepoItem], Error>) -> Void) {
-            let baseURL = URL(string: "https://seed.radicle.garden/api/v1/repos")!
-            let request = URLRequest(url: baseURL)
-            let task = URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                    return
-                }
-                
-                guard let data = data else {
-                    DispatchQueue.main.async {
-                        let noDataError = NSError(domain: "", code: -1,
-                                                  userInfo: [NSLocalizedDescriptionKey: "No data"])
-                        completion(.failure(noDataError))
-                    }
-                    return
-                }
-                
-                print("RAW JSON:", String(data: data, encoding: .utf8) ?? "nil")
-                
-                do {
-                    let decoder = JSONDecoder()
-                    let repos = try decoder.decode([RepoItem].self, from: data)
-                    DispatchQueue.main.async {
-                        completion(.success(repos))
-                    }
-                } catch {
-                    DispatchQueue.main.async {
-                        completion(.failure(error))
-                    }
-                }
-            }
-            task.resume()
-        }
+    private let baseURL = "https://seed.radicle.garden/api/v1/"
     
-    
-    func fetchCommit(rid: String, commit: String, completion: @escaping (Result<CommitResponse, Error>) -> Void) {
-        // e.g. https://seed.radicle.garden/api/v1/repos/{rid}/commits/{commit}
-        guard let url = URL(string: "https://seed.radicle.garden/api/v1/repos/\(rid)/commits/\(commit)") else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid commit URL"])))
+    func fetch<T: Decodable>(endpoint: String, completion: @escaping (Result<T, Error>) -> Void) {
+        guard let url = URL(string: baseURL + endpoint) else {
+            completion(.failure(NetworkError.invalidURL))
             return
         }
         
@@ -68,118 +30,266 @@ class NetworkService {
             
             guard let data = data else {
                 DispatchQueue.main.async {
-                    let noDataError = NSError(domain: "", code: -1,
-                                              userInfo: [NSLocalizedDescriptionKey: "No data"])
-                    completion(.failure(noDataError))
+                    completion(.failure(NetworkError.noData))
                 }
                 return
             }
             
             do {
                 let decoder = JSONDecoder()
-                let commitResp = try decoder.decode(CommitResponse.self, from: data)
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let decodedData = try decoder.decode(T.self, from: data)
                 DispatchQueue.main.async {
-                    completion(.success(commitResp))
+                    completion(.success(decodedData))
                 }
             } catch {
                 DispatchQueue.main.async {
-                    completion(.failure(error))
+                    completion(.failure(NetworkError.decodingError(error)))
                 }
             }
         }
         task.resume()
     }
     
-    /// Fetches all issues for the specified repository.
-    /// - Parameters:
-    ///   - repoID: The repository identifier.
-    ///   - completion: A closure that returns a Result with an array of Issue objects or an Error.
-    func fetchIssues(repoID: String, completion: @escaping (Result<[Issue], Error>) -> Void) {
-        let urlString = "https://seed.radicle.garden/api/v1/repos/\(repoID)/issues"
-        print("Fetching issues from: \(urlString)")
-
-        guard let url = URL(string: urlString) else {
-            completion(.failure(NetworkError.invalidURL))
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                print("Network error: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
-            }
-
-            // Check the HTTP status code
-            if let httpResponse = response as? HTTPURLResponse {
-                print("HTTP status code: \(httpResponse.statusCode)")
-            }
-
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(NetworkError.noData))
-                }
-                return
-            }
-
-            // Print raw JSON to see what's returned
-            print("RAW JSON:", String(data: data, encoding: .utf8) ?? "nil")
-
-            do {
-                let decoder = JSONDecoder()
-                let issues = try decoder.decode([Issue].self, from: data)
-                DispatchQueue.main.async {
-                    completion(.success(issues))
-                }
-            } catch {
-                print("Decoding error: \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
-            }
-        }.resume()
+    func fetchRepositories(completion: @escaping (Result<[RepoItem], Error>) -> Void) {
+        fetch(endpoint: "repos", completion: completion)
     }
     
-    /// Fetches a single issue by repoID and issueID.
-    /// - Parameters:
-    ///   - repoID: The repository identifier.
-    ///   - issueID: The unique issue identifier.
-    ///   - completion: A closure that returns a Result with an Issue or an Error.
-    func fetchIssue(repoID: String, issueID: String, completion: @escaping (Result<Issue, Error>) -> Void) {
-        let urlString = "https://seed.radicle.garden/api/v1/repos/\(repoID)/issues/\(issueID)"
-        guard let url = URL(string: urlString) else {
-            completion(.failure(NetworkError.invalidURL))
-            return
-        }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(NetworkError.noData))
-                }
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let issue = try decoder.decode(Issue.self, from: data)
-                DispatchQueue.main.async {
-                    completion(.success(issue))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(NetworkError.decodingError(error)))
-                }
-            }
-        }.resume()
+    func fetchCommit(rid: String, commit: String, completion: @escaping (Result<CommitResponse, Error>) -> Void) {
+        fetch(endpoint: "repos/\(rid)/commits/\(commit)", completion: completion)
     }
+    
+    func fetchIssues(repoID: String, completion: @escaping (Result<[Issue], Error>) -> Void) {
+        fetch(endpoint: "repos/\(repoID)/issues", completion: completion)
+    }
+    
+    func fetchIssue(repoID: String, issueID: String, completion: @escaping (Result<Issue, Error>) -> Void) {
+        fetch(endpoint: "repos/\(repoID)/issues/\(issueID)", completion: completion)
+    }
+    
+    func fetchDiff(rid: String, base: String, oid: String, completion: @escaping (Result<DiffResponse, Error>) -> Void) {
+        fetch(endpoint: "repos/\(rid)/diff/\(base)/\(oid)", completion: completion)
+    }
+    
+    func fetchRemotes(rid: String, completion: @escaping (Result<[Remote], Error>) -> Void) {
+        fetch(endpoint: "repos/\(rid)/remotes", completion: completion)
+    }
+    
+    func fetchReadme(rid: String, sha: String, completion: @escaping (Result<ReadmeResponse, Error>) -> Void) {
+        fetch(endpoint: "repos/\(rid)/readme/\(sha)", completion: completion)
+    }
+}
+
+enum NetworkError: Error {
+    case invalidURL
+    case noData
+    case decodingError(Error)
+}
+
+struct RadicleErrorMessage: Identifiable {
+    let id = UUID()
+    let message: String
+}
+
+// MARK: - RepoItem
+struct RepoItem: Identifiable, Decodable {
+    let payloads: Payloads
+    let delegates: [DelegateItem]
+    let threshold: Int
+    let visibility: Visibility
+    let rid: String
+    let seeding: Int
+
+    var id: String { rid }
+}
+
+// MARK: - Payloads
+struct Payloads: Codable {
+    let xyzRadicleProject: ProjectPayload?
+    
+    enum CodingKeys: String, CodingKey {
+        case xyzRadicleProject = "xyz.radicle.project"
+    }
+}
+
+// MARK: - Project Payload
+struct ProjectPayload: Codable {
+    let data: ProjectData
+    let meta: ProjectMeta
+}
+
+// MARK: - Project Data
+struct ProjectData: Codable {
+    let defaultBranch: String
+    let description: String
+    let name: String
+}
+
+// MARK: - Project Metadata
+struct ProjectMeta: Codable {
+    let head: String
+    let issues: IssueStats
+    let patches: PatchStats
+}
+
+// MARK: - Issue Stats
+struct IssueStats: Codable {
+    let open: Int
+    let closed: Int
+}
+
+// MARK: - Patch Stats
+struct PatchStats: Codable {
+    let open: Int
+    let draft: Int
+    let archived: Int
+    let merged: Int
+}
+
+// MARK: - Delegate
+struct DelegateItem: Codable, Identifiable {
+    let id: String
+    let alias: String?
+}
+
+// MARK: - Visibility
+struct Visibility: Codable {
+    let type: String
+}
+
+// MARK: - Commit
+struct CommitResponse: Codable {
+    let commit: CommitInfo
+    let diff: CommitDiff
+}
+
+struct CommitInfo: Codable {
+    let id: String
+    let author: Author
+    let summary: String
+    let description: String
+    let parents: [String]
+    let committer: Committer
+}
+
+struct Author: Codable {
+    let name: String
+    let email: String
+}
+
+struct Committer: Codable {
+    let name: String
+    let email: String
+    let time: Int // Possibly a Unix timestamp
+}
+
+struct CommitDiff: Codable {
+    let files: [DiffFile]
+    let stats: DiffStats
+}
+
+struct DiffFile: Codable, Identifiable {
+    let status: String // e.g. "modified"
+    let path: String
+    let diff: FileDiff
+    let old: DiffObject
+    let new: DiffObject
+
+    var id: String { path } // Using path as a unique identifier
+}
+
+struct FileDiff: Codable {
+    let type: String // e.g. "plain"
+    let hunks: [DiffHunk]
+    let stats: HunkStats
+    let eof: String
+}
+
+struct DiffHunk: Codable {
+    let header: String
+    let lines: [DiffLine]
+    let old: HunkRange
+    let new: HunkRange
+}
+
+struct DiffLine: Codable {
+    let type: String  // "context", "addition", "deletion"
+    let line: String
+    let lineNoOld: Int?
+    let lineNoNew: Int?
+}
+
+struct HunkRange: Codable {
+    let start: Int
+    let end: Int
+}
+
+struct HunkStats: Codable {
+    let additions: Int
+    let deletions: Int
+}
+
+struct DiffObject: Codable {
+    let oid: String
+    let mode: String
+}
+
+struct DiffStats: Codable {
+    let filesChanged: Int
+    let insertions: Int
+    let deletions: Int
+}
+
+// MARK: - Issue
+struct Issue: Codable {
+    let id: String
+    let title: String
+    let state: IssueState
+    let author: IssueAuthor
+    let assignees: [String]
+    let discussion: [IssueDiscussion]
+    let labels: [String]
+}
+
+struct IssueState: Codable {
+    let status: String
+}
+
+struct IssueAuthor: Codable {
+    let id: String
+    let alias: String?
+}
+
+struct IssueDiscussion: Codable {
+    let id: String
+    let author: IssueAuthor
+    let body: String
+    let edits: [IssueEdit]
+    let timestamp: Int
+    let replyTo: String?
+    let resolved: Bool
+}
+
+struct IssueEdit: Codable {
+    let author: IssueAuthor
+    let body: String
+    let timestamp: Int
+    let embeds: [String]
+}
+
+enum IssueStatus: String, Codable {
+    case open, closed
+}
+
+struct DiffResponse: Decodable {
+    let diff: String
+}
+
+struct Remote: Decodable {
+    let id: String
+    let alias: String?
+}
+
+struct ReadmeResponse: Decodable {
+    let content: String
 }

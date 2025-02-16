@@ -54,28 +54,28 @@ struct RepositoryCardView: View {
 }
 
 
-#Preview {
-    RepositoryCardView(repository: RepoItem(
-        payloads: Payloads(
-            xyzRadicleProject: ProjectPayload(
-                data: ProjectData(
-                    defaultBranch: "main",
-                    description: "Example Radicle repository",
-                    name: "radicle-sample-repo"
-                ),
-                meta: ProjectMeta(
-                    head: "abcdef1234567890",
-                    issues: IssueStats(open: 5, closed: 10),
-                    patches: PatchStats(open: 3, draft: 1, archived: 2, merged: 7)
-                )
-            )
-        ),
-        delegates: [
-            DelegateItem(id: "did:key:xyz", alias: "sample-delegate")
-        ],
-        threshold: 1,
-        visibility: Visibility(type: "public"),
-        rid: "rad:xyz123",
-        seeding: 42
-    ))
-}
+//#Preview {
+//    RepositoryCardView(repository: RepoItem(
+//        payloads: Payloads(
+//            xyzRadicleProject: ProjectPayload(
+//                data: ProjectData(
+//                    defaultBranch: "main",
+//                    description: "Example Radicle repository",
+//                    name: "radicle-sample-repo"
+//                ),
+//                meta: ProjectMeta(
+//                    head: "abcdef1234567890",
+//                    issues: IssueStats(open: 5, closed: 10),
+//                    patches: PatchStats(open: 3, draft: 1, archived: 2, merged: 7)
+//                )
+//            )
+//        ),
+//        delegates: [
+//            DelegateItem(id: "did:key:xyz", alias: "sample-delegate")
+//        ],
+//        threshold: 1,
+//        visibility: Visibility(type: "public"),
+//        rid: "rad:xyz123",
+//        seeding: 42
+//    ))
+//}
