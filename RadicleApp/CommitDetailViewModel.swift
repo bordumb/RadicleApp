@@ -8,8 +8,6 @@
 import Foundation
 import Combine
 
-// Ensure NetworkService.swift is in your project and imported (if needed)
-
 class CommitDetailViewModel: ObservableObject {
     @Published var commitResponse: CommitResponse?
     @Published var isLoading = false
