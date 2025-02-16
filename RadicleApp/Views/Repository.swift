@@ -17,5 +17,6 @@ struct Repository: Identifiable, Codable {
     let owner: String
     let latestCommit: String
     let updatedAt: String
+    let seeders: Int?
 }
 
