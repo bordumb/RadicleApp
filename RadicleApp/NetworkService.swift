@@ -78,6 +78,18 @@ class NetworkService {
     func fetchReadme(rid: String, sha: String, completion: @escaping (Result<ReadmeResponse, Error>) -> Void) {
         fetch(endpoint: "repos/\(rid)/readme/\(sha)", completion: completion)
     }
+    
+    func fetchActivity(rid: String, completion: @escaping (Result<[Int], Error>) -> Void) {
+        fetch(endpoint: "repos/\(rid)/activity") { (result: Result<ActivityResponse, Error>) in
+            switch result {
+            case .success(let decodedResponse):
+                completion(.success(decodedResponse.activity))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+
+    }
 }
 
 enum NetworkError: Error {
@@ -101,6 +113,11 @@ struct RepoItem: Identifiable, Decodable {
     let seeding: Int
 
     var id: String { rid }
+}
+
+// MARK: - Repo Activity
+struct ActivityResponse: Codable {
+    let activity: [Int]
 }
 
 // MARK: - Payloads
