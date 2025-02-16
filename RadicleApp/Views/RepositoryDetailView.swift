@@ -14,11 +14,11 @@ struct RepositoryDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
                 // Show the name
-                Text(repository.payloads.xyzRadicleProject.data.name ?? "No name")
+                Text(repository.payloads.xyzRadicleProject?.data.name ?? "No name")
                     .font(.largeTitle)
                 
                 // Show the description if present
-                if let desc = repository.payloads.xyzRadicleProject.data.description {
+                if let desc = repository.payloads.xyzRadicleProject?.data.description {
                     Text(desc)
                 }
                 
@@ -32,7 +32,7 @@ struct RepositoryDetailView: View {
                     Text("Delegates:")
                         .font(.headline)
                     ForEach(repository.delegates, id: \.id) { delegate in
-                        Text("• \(delegate.alias) (\(delegate.id))")
+                        Text("• \(delegate.alias ?? "Unknown Alias") (\(delegate.id))")
                             .font(.subheadline)
                     }
                 }
@@ -42,17 +42,17 @@ struct RepositoryDetailView: View {
                     .font(.footnote)
                 
                 // Meta info
-                let meta = repository.payloads.xyzRadicleProject.meta
-                Text("HEAD: \(meta.head)")
-                Text("Issues open: \(meta.issues.open), closed: \(meta.issues.closed)")
-                Text("Patches open: \(meta.patches.open), merged: \(meta.patches.merged)")
+                let meta = repository.payloads.xyzRadicleProject?.meta
+                Text("HEAD: \(meta?.head ?? "No HEAD available")")
+                Text("Issues open: \(meta?.issues.open ?? 0), closed: \(meta?.issues.closed ?? 0)")
+                Text("Patches open: \(meta?.patches.open ?? 0), merged: \(meta?.patches.merged ?? 0)")
                 
                 // Add some spacing before the new links
                 Spacer().frame(height: 20)
                 
                 // 1) View HEAD Commit
                 NavigationLink(destination: CommitDetailView(rid: repository.rid,
-                                                            commitHash: meta.head)) {
+                                                             commitHash: meta?.head ?? "No Commit")) {
                     Text("View HEAD Commit")
                         .font(.headline)
                         .padding()
@@ -61,7 +61,7 @@ struct RepositoryDetailView: View {
                 // 2) View Source Code (if you have a RepositorySourceView)
                 //    (comment out or remove if you haven't implemented it yet)
                 NavigationLink(destination: RepositorySourceView(rid: repository.rid,
-                                                                commit: meta.head)) {
+                                                                 commit: meta?.head ?? "No Commit")) {
                     Text("View Source Code")
                         .font(.headline)
                         .padding()
@@ -71,7 +71,7 @@ struct RepositoryDetailView: View {
             }
             .padding()
         }
-        .navigationTitle(repository.payloads.xyzRadicleProject.data.name ?? "Detail")
+        .navigationTitle(repository.payloads.xyzRadicleProject?.data.name ?? "Detail")
         .navigationBarTitleDisplayMode(.inline)
     }
 }
