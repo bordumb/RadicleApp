@@ -20,21 +20,23 @@ class RepositoryViewModel: ObservableObject {
     func fetchRepositories() {
         isLoading = true
         errorMessage = nil
-        
-        NetworkService.shared.fetchRepositories { [weak self] result in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.isLoading = false
-                switch result {
-                case .success(let repos):
+
+        Task {
+            do {
+                let repos = try await RepositoryService.shared.fetchRepositories()
+                await MainActor.run {
                     self.repositories = repos
-                case .failure(let error):
+                    self.isLoading = false
+                }
+            } catch {
+                await MainActor.run {
                     self.errorMessage = error.localizedDescription
+                    self.isLoading = false
                 }
             }
         }
     }
+
 }
 
 struct ErrorMessage: Identifiable {
