@@ -63,17 +63,20 @@ struct RepositoryCardView: View {
                 .padding()
             )
             .onAppear {
-                NetworkService.shared.fetchActivity(rid: repository.rid) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .success(let data):
+                Task {
+                    do {
+                        let data = try await RepositoryService.shared.fetchActivity(rid: repository.rid)
+                        await MainActor.run {
                             self.activityData = data
                             self.isLoading = false
-                        case .failure:
+                        }
+                    } catch {
+                        await MainActor.run {
                             self.isLoading = false
                         }
                     }
                 }
             }
+
     }
 }

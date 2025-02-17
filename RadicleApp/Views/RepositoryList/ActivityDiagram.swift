@@ -40,13 +40,13 @@ struct ActivityDiagram: View {
 
     /// Aggregates daily activity into weekly buckets (each bucket represents 1 week)
     private func aggregateActivity(_ data: [Int]) -> [Int] {
-        let bucketSize = 7 // Each bucket represents 7 days (1 week)
+        let bucketSize = 1 // Each bucket represents 1 days
         let weeklyData = stride(from: 0, to: data.count, by: bucketSize).map { index in
             data[index..<min(index + bucketSize, data.count)].reduce(0, +) // Sum commits per week
         }
 
-        print("🔹 [DEBUG] Raw Daily Activity Data (Last \(weeksToShow * 7) days):", data)
-        print("🔹 [DEBUG] Aggregated Weekly Activity Data:", weeklyData)
+//        print("🔹 [DEBUG] Raw Daily Activity Data (Last \(weeksToShow * 7) days):", data)
+//        print("🔹 [DEBUG] Aggregated Weekly Activity Data:", weeklyData)
 
         return weeklyData
     }
@@ -68,7 +68,7 @@ struct ActivityDiagram: View {
             return CGPoint(x: CGFloat(i) * widthStep, y: normalizedY)
         }
 
-        print("🔹 [DEBUG] Normalized Points for Graph:", points)
+//        print("🔹 [DEBUG] Normalized Points for Graph:", points)
 
         return points
     }
