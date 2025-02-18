@@ -7,11 +7,6 @@
 
 // MARK: - Commit
 struct CommitResponse: Codable {
-    let commit: CommitInfo
-    let diff: CommitDiff
-}
-
-struct CommitInfo: Codable {
     let id: String
     let author: Author
     let summary: String

@@ -8,3 +8,9 @@
 	</array>
 </dict>
 </plist>
+<!--FOR HTTP - unsecure-->
+<!--<key>NSAppTransportSecurity</key>-->
+<!--<dict>-->
+<!--    <key>NSAllowsArbitraryLoads</key>-->
+<!--    <true/>-->
+<!--</dict>-->
