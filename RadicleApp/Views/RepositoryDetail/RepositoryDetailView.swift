@@ -16,6 +16,7 @@ struct RepositoryDetailView: View {
     @State private var selectedBranch: String = "master"
     @State private var commitHistory: [CommitResponse] = []
     @State private var selectedTab: TabSelection = .files // Track active tab
+    @EnvironmentObject var apiClient: APIClient
     
     var repositoryURL: String {
         "https://app.radicle.xyz/nodes/seed.radicle.xyz/\(repository.id)"
@@ -30,6 +31,11 @@ struct RepositoryDetailView: View {
             Color.black.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 12) {
+                // Persistent Server Selector at the top
+                NodeSelectorView()
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                
                 // 🏷️ Repository Name & URL Copy Button
                 HStack {
                     Text(repository.payloads.xyzRadicleProject?.data.name ?? "Unknown Repository")
@@ -220,139 +226,3 @@ struct RepositoryDetailView: View {
         }
     }
 }
-//
-//
-//struct RepositoryDetailView: View {
-//    let repository: RepoItem
-//    
-//    @State private var readmeContent: String = "Loading..."
-//    @State private var selectedBranch: String = "master"
-//    @State private var commitHistory: [CommitResponse] = []
-//    @State private var showCopiedMessage = false
-//    
-//    var repositoryURL: String {
-//        "https://app.radicle.xyz/nodes/seed.radicle.xyz/\(repository.id)"
-//    }
-//    
-//    var body: some View {
-//        ZStack {
-//            Color.black.ignoresSafeArea()
-//            
-//            VStack(alignment: .leading, spacing: 12) {
-//                // 🏷️ Repository Name
-//                Text(repository.payloads.xyzRadicleProject?.data.name ?? "Unknown Repository")
-//                    .font(.title)
-//                    .bold()
-//                    .foregroundColor(.white)
-//                
-//                HStack {
-//                    // 🌐 URL Copy Button
-//                    Button(action: {
-//                        UIPasteboard.general.string = repositoryURL
-//                        showCopiedMessage = true
-//                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-//                            showCopiedMessage = false
-//                        }
-//                    }) {
-//                        Image(systemName: "link")
-//                            .foregroundColor(.blue)
-//                            .padding(8)
-//                            .background(Color.white.opacity(0.1))
-//                            .clipShape(Circle())
-//                    }
-//                    .buttonStyle(PlainButtonStyle()) // Removes default button styling
-//                    
-//                    if showCopiedMessage {
-//                        Text("Copied!")
-//                            .font(.caption)
-//                            .foregroundColor(.green)
-//                            .transition(.opacity)
-//                    }
-//
-//                    Spacer()
-//                    
-//                    // 🌱 Seeder Count
-//                    Text("🌱 Seeders: \(repository.seeding)")
-//                        .foregroundColor(.white.opacity(0.7))
-//                }
-//
-//                // 📜 Repository Description
-//                if let description = repository.payloads.xyzRadicleProject?.data.description {
-//                    Text(description)
-//                        .font(.body)
-//                        .foregroundColor(.white)
-//                }
-//
-//                // 🔻 Branch Selection Dropdown
-//                HStack {
-//                    Text("Branch:")
-//                        .foregroundColor(.white)
-//
-//                    Menu {
-//                        Button("master") { selectedBranch = "master" }
-//                        ForEach(commitHistory.map { $0.id.prefix(7) }, id: \.self) { commitID in
-//                            Button(commitID) { selectedBranch = String(commitID) }
-//                        }
-//                    } label: {
-//                        Text(selectedBranch)
-//                            .padding(6)
-//                            .background(Color.gray.opacity(0.2))
-//                            .cornerRadius(6)
-//                            .foregroundColor(.white)
-//                    }
-//                }
-//
-//                // 📝 Latest Commit Information (Handles 'master' case)
-//                let selectedCommit = selectedBranch == "master"
-//                    ? commitHistory.first // Default to the latest commit
-//                    : commitHistory.first(where: { $0.id.hasPrefix(selectedBranch) })
-//
-//                if let commit = selectedCommit {
-//                    Text("Latest Commit: \(commit.id.prefix(7)) - \(commit.summary)")
-//                        .font(.caption)
-//                        .foregroundColor(.white.opacity(0.8))
-//                }
-//
-//                // 📖 README Section
-//                Text("README.md")
-//                    .font(.headline)
-//                    .foregroundColor(.white)
-//
-//                ScrollView {
-//                    Markdown(readmeContent)
-//                        .markdownTheme(.gitHub)
-//                        .foregroundStyle(.white)
-//                        .padding()
-//                }
-//                .background(Color.black.opacity(0.1))
-//                .cornerRadius(10)
-//
-//                Spacer()
-//            }
-//            .padding()
-//        }
-//        .task {
-//            await fetchReadme()
-//            await fetchCommits()
-//        }
-//    }
-//
-//    // 📥 Fetch README Content
-//    func fetchReadme() async {
-//        do {
-//            let response = try await FileService.shared.fetchReadme(rid: repository.id)
-//            readmeContent = response.content
-//        } catch {
-//            readmeContent = "Failed to load README."
-//        }
-//    }
-//
-//    // 📥 Fetch Commit History
-//    func fetchCommits() async {
-//        do {
-//            commitHistory = try await CommitService.shared.fetchCommits(rid: repository.id)
-//        } catch {
-//            commitHistory = []
-//        }
-//    }
-//}
