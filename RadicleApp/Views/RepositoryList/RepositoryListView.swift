@@ -7,8 +7,47 @@
 
 import SwiftUI
 
+//struct RepositoryListView: View {
+//    @StateObject private var viewModel = RepositoryViewModel() // ViewModel manages data fetching
+//
+//    var body: some View {
+//        NavigationView {
+//            VStack {
+//                if viewModel.isLoading {
+//                    ProgressView("Loading repositories...")
+//                        .padding()
+//                } else if let errorMessage = viewModel.errorMessage {
+//                    Text("Error: \(errorMessage)")
+//                        .foregroundColor(.red)
+//                        .padding()
+//                } else {
+//                    ScrollView {
+//                        VStack(spacing: 16) {
+//                            repositoryList()
+//                        }
+//                        .padding()
+//                    }
+//                }
+//            }
+//            .navigationTitle("Repositories")
+//            .background(Color.black.edgesIgnoringSafeArea(.all))
+//        }
+//    }
+//    
+//    // Extract ForEach into a separate function
+//    @ViewBuilder
+//    private func repositoryList() -> some View {
+//        ForEach(viewModel.repositories) { repo in
+//            RepositoryNavigationLink(repository: repo)
+//        }
+//    }
+//}
+//
+//
+//
 struct RepositoryListView: View {
-    @StateObject private var viewModel = RepositoryViewModel() // ViewModel manages data fetching
+    @StateObject private var viewModel = RepositoryViewModel()
+    @ObservedObject var apiClient = APIClient.shared  // Observe APIClient changes
 
     var body: some View {
         NavigationView {
@@ -31,10 +70,13 @@ struct RepositoryListView: View {
             }
             .navigationTitle("Repositories")
             .background(Color.black.edgesIgnoringSafeArea(.all))
+            .onChange(of: apiClient.baseURL) { _ in
+                print("🔄 Server changed! Reloading repositories...")
+                viewModel.fetchRepositories() // Fetch data when server changes
+            }
         }
     }
     
-    // Extract ForEach into a separate function
     @ViewBuilder
     private func repositoryList() -> some View {
         ForEach(viewModel.repositories) { repo in
@@ -56,37 +98,6 @@ struct RepositoryNavigationLink: View {
     }
 }
 
-//
-//
-//import SwiftUI
-//
-//struct RepositoryListView: View {
-//    @StateObject private var viewModel = RepositoryViewModel() // ViewModel manages data fetching
-//
-//    var body: some View {
-//        NavigationView {
-//            VStack {
-//                if viewModel.isLoading {
-//                    ProgressView("Loading repositories...")
-//                        .padding()
-//                } else if let errorMessage = viewModel.errorMessage {
-//                    Text("Error: \(errorMessage)")
-//                        .foregroundColor(.red)
-//                        .padding()
-//                } else {
-//                    ScrollView {
-//                        VStack(spacing: 16) {
-//                            ForEach(viewModel.repositories) { repo in
-//                                RepositoryCardView(repository: repo)
-//                            }
-//                        }
-//                        .padding()
-//                    }
-//                }
-//            }
-//            .navigationTitle("Repositories")
-//            .background(Color.black.edgesIgnoringSafeArea(.all))
-//        }
-//    }
-//}
-
+#Preview {
+    
+}
