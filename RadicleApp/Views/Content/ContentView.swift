@@ -1,5 +1,5 @@
 //
-//  ContentViewMain.swift
+//  ContentView.swift
 //  RadicleApp
 //
 //  Created by bordumb on 23/02/2025.
