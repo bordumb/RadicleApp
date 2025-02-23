@@ -2,13 +2,14 @@
 //  ContentView.swift
 //  RadicleApp
 //
-//  Created by bordumb on 16/02/2025.
+//  Created by bordumb on 23/02/2025.
+//
 
 import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var apiClient: APIClient
-    
+
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -16,13 +17,13 @@ struct ContentView: View {
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
-    
+
     var body: some View {
-        
+
         VStack {
-        
+
             TopNavigationBar()  // Wrapping the existing structure
-            
+
             TabView {
                 RepositoryListView()
                     .tabItem {
@@ -34,7 +35,7 @@ struct ContentView: View {
                             Text("Home")
                         }
                     }
-                
+
                 SettingsView()
                     .tabItem {
                         VStack {
@@ -48,3 +49,19 @@ struct ContentView: View {
         }
     }
 }
+
+// Example for importing Rust functions
+//import SwiftUI
+//
+//struct ContentView: View {
+//    var body: some View {
+//        VStack {
+//            Text("Hello, Radicle!")
+//                .padding()
+//
+//            Button("Test Rust Function") {
+//                RustInterop.testRust()
+//            }
+//        }
+//    }
+//}

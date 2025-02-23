@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C6065E02D62C796007DEDEE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1C6065DF2D62C796007DEDEE /* MarkdownUI */; };
+		1C60679B2D6B9A8A007DEDEE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1C60679A2D6B9A8A007DEDEE /* MarkdownUI */; };
+		1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,9 @@
 		1C4E7FDE2D6248FF00493741 /* RadicleApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RadicleApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4E7FF22D62490000493741 /* RadicleAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadicleAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4E7FFC2D62490000493741 /* RadicleAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RadicleAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C60678E2D6B8C70007DEDEE /* libheartwood_ios_bridge_universal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libheartwood_ios_bridge_universal.a; path = "RustCore/Heartwood/ios-bridge/build/ios/libheartwood_ios_bridge_universal.a"; sourceTree = "<group>"; };
+		1C6067922D6B985E007DEDEE /* Heartwood.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Heartwood.xcframework; path = "RustCore/Heartwood/ios-bridge/build/ios/Heartwood.xcframework"; sourceTree = "<group>"; };
+		1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Heartwood.xcframework; path = "RustCore/ios-bridge/build/ios/Heartwood.xcframework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -70,7 +74,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C6065E02D62C796007DEDEE /* MarkdownUI in Frameworks */,
+				1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */,
+				1C60679B2D6B9A8A007DEDEE /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +102,7 @@
 				1C4E7FE02D6248FF00493741 /* RadicleApp */,
 				1C4E7FF52D62490000493741 /* RadicleAppTests */,
 				1C4E7FFF2D62490000493741 /* RadicleAppUITests */,
+				1C60678D2D6B8C70007DEDEE /* Frameworks */,
 				1C4E7FDF2D6248FF00493741 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,6 +115,16 @@
 				1C4E7FFC2D62490000493741 /* RadicleAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1C60678D2D6B8C70007DEDEE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1C6067922D6B985E007DEDEE /* Heartwood.xcframework */,
+				1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */,
+				1C60678E2D6B8C70007DEDEE /* libheartwood_ios_bridge_universal.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -131,7 +147,7 @@
 			);
 			name = RadicleApp;
 			packageProductDependencies = (
-				1C6065DF2D62C796007DEDEE /* MarkdownUI */,
+				1C60679A2D6B9A8A007DEDEE /* MarkdownUI */,
 			);
 			productName = RadicleApp;
 			productReference = 1C4E7FDE2D6248FF00493741 /* RadicleApp.app */;
@@ -216,7 +232,7 @@
 			mainGroup = 1C4E7FD52D6248FF00493741;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				1C6065DE2D62C75F007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */,
+				1C6067992D6B9A0D007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C4E7FDF2D6248FF00493741 /* Products */;
@@ -314,11 +330,19 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/RustCore/ios-bridge/include/**",
+					"$(PROJECT_DIR)/RustCore/ios-bridge/build/ios/Heartwood.xcframework/ios-arm64_x86_64-simulator/Headers/**",
+					"$(PROJECT_DIR)/RustCore/ios-bridge/build/ios/Heartwood.xcframework/ios-arm64/Headers/**",
+					"$(inherited)",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = RadicleApp.RadicleApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "RustCore/ios-bridge/include/heartwood_bridge.h";
 				SWIFT_VERSION = 5.0;
+				Stuff = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -345,11 +369,19 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/RustCore/ios-bridge/include/**",
+					"$(PROJECT_DIR)/RustCore/ios-bridge/build/ios/Heartwood.xcframework/ios-arm64_x86_64-simulator/Headers/**",
+					"$(PROJECT_DIR)/RustCore/ios-bridge/build/ios/Heartwood.xcframework/ios-arm64/Headers/**",
+					"$(inherited)",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = RadicleApp.RadicleApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "RustCore/ios-bridge/include/heartwood_bridge.h";
 				SWIFT_VERSION = 5.0;
+				Stuff = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -413,6 +445,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OBJC_BRIDGING_HEADER = "RustCore/Heartwood/ios-bridge/heartwood_bridge.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -469,6 +502,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "RustCore/Heartwood/ios-bridge/heartwood_bridge.h";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -587,7 +621,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		1C6065DE2D62C75F007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */ = {
+		1C6067992D6B9A0D007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/gonzalezreal/MarkdownUI";
 			requirement = {
@@ -598,9 +632,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1C6065DF2D62C796007DEDEE /* MarkdownUI */ = {
+		1C60679A2D6B9A8A007DEDEE /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1C6065DE2D62C75F007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */;
+			package = 1C6067992D6B9A0D007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */;
 			productName = MarkdownUI;
 		};
 /* End XCSwiftPackageProductDependency section */
