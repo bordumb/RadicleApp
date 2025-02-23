@@ -64,9 +64,9 @@ fastlane/test_output
 # -------------------------------------
 # 🦀 Rust (Heartwood)
 # -------------------------------------
-## Build Artifacts
+## Ignore Rust build artifacts
+RustCore/ios-bridge/target/
 RustCore/Heartwood/target/
-RustCore/Heartwood/ios-bridge/build/
 
 ## Cargo
 Cargo.lock
@@ -76,6 +76,17 @@ Cargo.lock
 ## Rust Debugging & Logs
 debug.log
 *.rs.bk
+
+# Ignore compiled Rust libraries
+*.a
+*.dylib
+*.so
+*.o
+
+# Ignore Xcode build artifacts
+DerivedData/
+*.xcworkspace/
+*.xcuserdatad/
 
 # -------------------------------------
 # 🚀 XCFramework (Generated Binaries)

@@ -17,7 +17,6 @@ Building locally it looks like below, pulling real data from the API endpoints:
 
 ![](./resources/image.png)
 
-
 ---
 
 ## But...why?!?
@@ -39,13 +38,11 @@ My underlying hypothesis is that by allowing passive seeding of repositories on 
  ┣ 📂 Navigation/       # App navigation & routing
  ┣ 📂 RustCore/         # Rust integration layer
  ┃ ┣ 📂 Heartwood/      # (Git Submodule) Heartwood's Rust source
- ┃ ┃ ┣ 📂 ios-bridge/   # Rust-to-iOS bridge for FFI integration
- ┃ ┃ ┃ ┣ 📜 Cargo.toml  # Rust package manifest for the iOS bridge
- ┃ ┃ ┃ ┣ 📜 build_ios.sh # Script to build Rust into an XCFramework
- ┃ ┃ ┃ ┣ 📂 include/     # Header files for Swift interoperability
- ┃ ┃ ┃ ┗ 📂 build/ios/  # Compiled `Heartwood.xcframework`
- ┣ 📜 RadicleCloneApp.swift  # Entry point of the iOS app
- ┣ 📜 ContentView.swift      # Main UI View
+ ┃ ┣ 📂 ios-bridge/     # Rust-to-iOS bridge for FFI integration
+ ┃ ┃ ┣ 📜 Cargo.toml    # Rust package manifest for the iOS bridge
+ ┃ ┃ ┣ 📜 build_ios.sh  # Script to build Rust into an XCFramework
+ ┃ ┃ ┣ 📂 include/       # Header files for Swift interoperability
+ ┃ ┃ ┗ 📂 build/ios/    # Compiled `Heartwood.xcframework`
  ┣ 📜 Info.plist             # iOS app metadata
  ┗ 📜 Assets.xcassets        # App icons and assets
 ```
@@ -57,7 +54,7 @@ My underlying hypothesis is that by allowing passive seeding of repositories on 
 ### **1️⃣ Clone the Repository**
 Since **Heartwood is a Git submodule**, you need to initialize it when cloning the repo:
 ```bash
-git clone --recurse-submodules https://github.com/bordumb/RadicleApp.git
+git clone --recurse-submodules https://github.com/yourusername/RadicleApp.git
 ```
 If you already cloned the repo without submodules, run:
 ```bash
@@ -74,12 +71,12 @@ rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim
 ### **3️⃣ Build the Rust Library for iOS**
 Compile the **Heartwood Rust library** into an `.xcframework`:
 ```bash
-sh RustCore/Heartwood/build_ios.sh
+sh RustCore/build_ios.sh
 ```
 Expected output:
 ```
 📦 Creating XCFramework...
-✅ XCFramework created at: RustCore/Heartwood/ios-bridge/build/ios/Heartwood.xcframework
+✅ XCFramework created at: RustCore/ios-bridge/build/ios/Heartwood.xcframework
 ```
 
 ---
@@ -89,7 +86,7 @@ Expected output:
 1. Open **Xcode**.
 2. Drag & drop:
    ```
-   RustCore/Heartwood/ios-bridge/build/ios/Heartwood.xcframework
+   RustCore/ios-bridge/build/ios/Heartwood.xcframework
    ```
    into **Frameworks, Libraries, and Embedded Content**.
 3. Set **"Embed"** to **"Do Not Embed"** (since it’s a static library).
@@ -99,7 +96,7 @@ Expected output:
 2. Search for **"Library Search Paths"**.
 3. Add:
    ```
-   $(PROJECT_DIR)/RustCore/Heartwood/ios-bridge/build/ios/
+   $(PROJECT_DIR)/RustCore/ios-bridge/build/ios/
    ```
 4. Set it to **recursive**.
 
@@ -153,7 +150,7 @@ git commit -m "Updated Heartwood to latest version"
 
 ### **2️⃣ Rebuild the XCFramework**
 ```bash
-sh RustCore/Heartwood/build_ios.sh
+sh RustCore/ios-bridge/build_ios.sh
 ```
 Then re-run the iOS app in Xcode.
 
@@ -164,9 +161,9 @@ Then re-run the iOS app in Xcode.
 |------|------------|
 | **1. Clone repo & submodule** | `git clone --recurse-submodules` |
 | **2. Install Rust dependencies** | `rustup target add aarch64-apple-ios` |
-| **3. Build Heartwood for iOS** | `sh RustCore/Heartwood/build_ios.sh` |
+| **3. Build Heartwood for iOS** | `sh RustCore/build_ios.sh` |
 | **4. Add `Heartwood.xcframework` to Xcode** | Drag into Frameworks & Libraries |
-| **5. Set Library Search Path** | `$(PROJECT_DIR)/RustCore/Heartwood/ios-bridge/build/ios/` |
+| **5. Set Library Search Path** | `$(PROJECT_DIR)/RustCore/ios-bridge/build/ios/` |
 | **6. Call Rust in Swift** | `RustInterop.testRust()` |
 | **7. Update Heartwood** | `git pull && sh build_ios.sh` |
 

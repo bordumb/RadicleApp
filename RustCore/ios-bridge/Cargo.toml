@@ -1,0 +1,13 @@
+[package]
+name = "heartwood_ios_bridge"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "heartwood_ios_bridge"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+radicle-cli = { path = "../Heartwood/radicle-cli" }
+radicle-node = { path = "../Heartwood/radicle-node" }
+# ... add or remove crates as needed

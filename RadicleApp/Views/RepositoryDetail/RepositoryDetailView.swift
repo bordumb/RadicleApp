@@ -31,10 +31,6 @@ struct RepositoryDetailView: View {
             Color.black.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 12) {
-                // Persistent Server Selector at the top
-                NodeSelectorView()
-                    .padding(.horizontal)
-                    .padding(.top, 8)
                 
                 // 🏷️ Repository Name & URL Copy Button
                 HStack {
