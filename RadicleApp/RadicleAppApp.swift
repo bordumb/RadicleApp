@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct RadicleApp: App {
+    @StateObject private var apiClient = APIClient.shared
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(apiClient) // Inject into the environment
         }
     }
 }
