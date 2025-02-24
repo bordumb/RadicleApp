@@ -96,19 +96,3 @@ struct ContentView: View {
 //        }
 //    }
 //}
-
-// Example for importing Rust functions
-//import SwiftUI
-//
-//struct ContentView: View {
-//    var body: some View {
-//        VStack {
-//            Text("Hello, Radicle!")
-//                .padding()
-//
-//            Button("Test Rust Function") {
-//                RustInterop.testRust()
-//            }
-//        }
-//    }
-//}

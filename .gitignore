@@ -24,6 +24,7 @@ Spotlight-V100
 /usr/local/lib/
 /usr/local/include/
 
+
 # -------------------------------------
 # 🛠 Xcode
 # -------------------------------------
@@ -102,7 +103,8 @@ Cargo.lock
 debug.log
 *.rs.bk
 
-# Ignore all Rust static libraries
+
+# Ignore compiled Rust libraries
 *.a
 *.dylib
 *.so

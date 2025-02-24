@@ -11,6 +11,7 @@
 		1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */; };
 		1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068512D6BF2A5007DEDEE /* libz.tbd */; };
 		1C6068542D6BF2AF007DEDEE /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068532D6BF2AF007DEDEE /* libiconv.tbd */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Untitled.swift,
 			);
 			target = 1C4E7FDD2D6248FF00493741 /* RadicleApp */;
 		};
