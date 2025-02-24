@@ -8,47 +8,67 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var apiClient: APIClient
-
-    init() {
-        let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor.black
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-    }
+    @State private var output: String = ""
 
     var body: some View {
-
         VStack {
-
-            TopNavigationBar()  // Wrapping the existing structure
-
-            TabView {
-                RepositoryListView()
-                    .tabItem {
-                        VStack {
-                            Image("home_icon")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 24, height: 24)
-                            Text("Home")
-                        }
-                    }
-
-                SettingsView()
-                    .tabItem {
-                        VStack {
-                            Image(systemName: "gearshape.fill")
-                            Text("Settings")
-                        }
-                    }
+            Text("Radicle Authentication")
+                .font(.title)
+            Button("Run `rad auth`") {
+                output = RustInterop.radAuth(alias: "alice")
             }
-            .tint(.gray)
-            .edgesIgnoringSafeArea(.bottom)
+            Text(output)
+                .padding()
+                .foregroundColor(.green)
         }
     }
 }
+
+//
+//import SwiftUI
+//
+//struct ContentView: View {
+//    @EnvironmentObject var apiClient: APIClient
+//
+//    init() {
+//        let appearance = UITabBarAppearance()
+//        appearance.configureWithOpaqueBackground()
+//        appearance.backgroundColor = UIColor.black
+//        UITabBar.appearance().standardAppearance = appearance
+//        UITabBar.appearance().scrollEdgeAppearance = appearance
+//    }
+//
+//    var body: some View {
+//
+//        VStack {
+//
+//            TopNavigationBar()  // Wrapping the existing structure
+//
+//            TabView {
+//                RepositoryListView()
+//                    .tabItem {
+//                        VStack {
+//                            Image("home_icon")
+//                                .resizable()
+//                                .scaledToFit()
+//                                .frame(width: 24, height: 24)
+//                            Text("Home")
+//                        }
+//                    }
+//
+//                SettingsView()
+//                    .tabItem {
+//                        VStack {
+//                            Image(systemName: "gearshape.fill")
+//                            Text("Settings")
+//                        }
+//                    }
+//            }
+//            .tint(.gray)
+//            .edgesIgnoringSafeArea(.bottom)
+//        }
+//    }
+//}
 
 // Example for importing Rust functions
 //import SwiftUI

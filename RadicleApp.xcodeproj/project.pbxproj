@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		1C60679B2D6B9A8A007DEDEE /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1C60679A2D6B9A8A007DEDEE /* MarkdownUI */; };
 		1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */; };
+		1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068512D6BF2A5007DEDEE /* libz.tbd */; };
+		1C6068542D6BF2AF007DEDEE /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068532D6BF2AF007DEDEE /* libiconv.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +37,8 @@
 		1C60678E2D6B8C70007DEDEE /* libheartwood_ios_bridge_universal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libheartwood_ios_bridge_universal.a; path = "RustCore/Heartwood/ios-bridge/build/ios/libheartwood_ios_bridge_universal.a"; sourceTree = "<group>"; };
 		1C6067922D6B985E007DEDEE /* Heartwood.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Heartwood.xcframework; path = "RustCore/Heartwood/ios-bridge/build/ios/Heartwood.xcframework"; sourceTree = "<group>"; };
 		1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Heartwood.xcframework; path = "RustCore/ios-bridge/build/ios/Heartwood.xcframework"; sourceTree = "<group>"; };
+		1C6068512D6BF2A5007DEDEE /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		1C6068532D6BF2AF007DEDEE /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -42,7 +46,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Untitled.swift,
 			);
 			target = 1C4E7FDD2D6248FF00493741 /* RadicleApp */;
 		};
@@ -74,6 +77,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C6068542D6BF2AF007DEDEE /* libiconv.tbd in Frameworks */,
+				1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */,
 				1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */,
 				1C60679B2D6B9A8A007DEDEE /* MarkdownUI in Frameworks */,
 			);
@@ -120,6 +125,8 @@
 		1C60678D2D6B8C70007DEDEE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1C6068532D6BF2AF007DEDEE /* libiconv.tbd */,
+				1C6068512D6BF2A5007DEDEE /* libz.tbd */,
 				1C6067922D6B985E007DEDEE /* Heartwood.xcframework */,
 				1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */,
 				1C60678E2D6B8C70007DEDEE /* libheartwood_ios_bridge_universal.a */,
