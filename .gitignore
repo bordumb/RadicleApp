@@ -4,6 +4,25 @@
 .DS_Store
 .AppleDouble
 .LSOverride
+# Git Submodules
+**/.git/
+
+# Ignore log and debugging files
+*.log
+*.bak
+*.bk
+debug.log
+*.rs.bk
+
+# Ignore system files
+.Trashes
+.fseventsd
+Spotlight-V100
+
+# Ignore Homebrew & system-wide cargo artifacts
+/usr/local/Cellar/
+/usr/local/lib/
+/usr/local/include/
 
 # -------------------------------------
 # 🛠 Xcode
@@ -65,8 +84,14 @@ fastlane/test_output
 # 🦀 Rust (Heartwood)
 # -------------------------------------
 ## Ignore Rust build artifacts
-RustCore/ios-bridge/target/
 RustCore/Heartwood/target/
+RustCore/ios-bridge/target/
+RustCore/ios-bridge/build/
+RustCore/ios-bridge/Cargo.lock
+RustCore/ios-bridge/build/ios/
+RustCore/ios-bridge/build/ios/Heartwood.xcframework/
+RustCore/ios-bridge/build/ios/libheartwood_ios_bridge_sim.a
+RustCore/ios-bridge/build/ios/Heartwood.xcframework/**/*.a
 
 ## Cargo
 Cargo.lock
@@ -77,11 +102,12 @@ Cargo.lock
 debug.log
 *.rs.bk
 
-# Ignore compiled Rust libraries
+# Ignore all Rust static libraries
 *.a
 *.dylib
 *.so
 *.o
+*.rlib
 
 # Ignore Xcode build artifacts
 DerivedData/
@@ -91,4 +117,12 @@ DerivedData/
 # -------------------------------------
 # 🚀 XCFramework (Generated Binaries)
 # -------------------------------------
+# Ignore Xcode's build directories
+*.xcbuild/
+*.xcframework/
+*.xcarchive/
+
+# Ignore device-specific output folders
+RustCore/ios-bridge/build/ios/Heartwood.xcframework/ios-arm64
+RustCore/ios-bridge/build/ios/Heartwood.xcframework/ios-arm64_x86_64-simulator
 RustCore/Heartwood/ios-bridge/build/ios/Heartwood.xcframework/
