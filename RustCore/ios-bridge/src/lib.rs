@@ -3,6 +3,39 @@ use std::os::raw::c_char;
 use radicle_cli::commands::rad_auth;  // Changed from auth to rad_auth
 use radicle::node::Alias;
 use std::str::FromStr;
+use git2::{Repository, Error};
+
+#[no_mangle]
+pub extern "C" fn get_git_version() -> *const c_char {
+    let version = "git version 2.34.0 (libgit2)".to_string();
+    CString::new(version).unwrap().into_raw()
+}
+
+#[no_mangle]
+pub extern "C" fn clone_repo(url: *const c_char, path: *const c_char) -> i32 {
+    let url = unsafe { CStr::from_ptr(url).to_string_lossy().into_owned() };
+    let path = unsafe { CStr::from_ptr(path).to_string_lossy().into_owned() };
+
+    println!("🚀 Attempting to clone: {} -> {}", url, path);
+
+    match Repository::clone(&url, &path) {
+        Ok(_) => {
+            println!("✅ Clone successful: {} -> {}", url, path);
+            0
+        },
+        Err(e) => {
+            println!("❌ Clone failed: {:?} -> {:?}", e, path);
+            -1
+        }
+    }
+}
+
+
+#[no_mangle]
+pub extern "C" fn free_c_string(ptr: *mut c_char) {
+    if ptr.is_null() { return; }
+    unsafe { let _ = CString::from_raw(ptr); } // ✅ Properly frees memory
+}
 
 /// Convert Rust string to a C string for Swift interop
 fn to_c_string(s: String) -> *mut c_char {

@@ -8,11 +8,16 @@ pragma_once = true
 "CBINDGEN" = "1"
 
 [export]
-include = ["rad_auth"]
+include = [
+    "ios_bridge::get_git_version",
+    "ios_bridge::clone_repo",
+    "ios_bridge::free_c_string",
+    "rad_auth"
+]
 
 [parse]
 parse_deps = true
-include = ["radicle_cli", "radicle"]
+include = ["ios_bridge", "rad_auth"]  # ✅ Explicitly include ios_bridge
 exclude = [
     "radicle::ALLOWED_CHARS",
     "radicle::PRAGMA",

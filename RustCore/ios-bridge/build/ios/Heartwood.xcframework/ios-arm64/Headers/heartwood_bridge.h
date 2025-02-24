@@ -10,32 +10,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-/**
- * Advertized node features. Signals what services the node supports.
- */
-typedef struct Features Features;
+const char *get_git_version(void);
 
-/**
- * A valid threshold for the identity [`Doc`].
- *
- * It can only be constructed via [`Threshold::new`] or [`Threshold::MIN`].
- */
-typedef struct Threshold Threshold;
+int32_t clone_repo(const char *url, const char *path);
 
-/**
- * Timestamp used for COB operations.
- */
-typedef struct Timestamp Timestamp;
-
-
-
-
-
-
-
-
-
-
+void free_c_string(char *ptr);
 
 /**
  * Initialize Radicle authentication (rad auth --alias <name>)
