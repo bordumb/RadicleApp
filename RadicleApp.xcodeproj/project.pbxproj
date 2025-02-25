@@ -11,7 +11,7 @@
 		1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C60679C2D6BA5B4007DEDEE /* Heartwood.xcframework */; };
 		1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068512D6BF2A5007DEDEE /* libz.tbd */; };
 		1C6068542D6BF2AF007DEDEE /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068532D6BF2AF007DEDEE /* libiconv.tbd */; };
-
+		1C6069172D6D5B2D007DEDEE /* Sourceful in Frameworks */ = {isa = PBXBuildFile; productRef = 1C6069162D6D5B2D007DEDEE /* Sourceful */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +79,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C6069172D6D5B2D007DEDEE /* Sourceful in Frameworks */,
 				1C6068542D6BF2AF007DEDEE /* libiconv.tbd in Frameworks */,
 				1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */,
 				1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */,
@@ -157,6 +158,7 @@
 			name = RadicleApp;
 			packageProductDependencies = (
 				1C60679A2D6B9A8A007DEDEE /* MarkdownUI */,
+				1C6069162D6D5B2D007DEDEE /* Sourceful */,
 			);
 			productName = RadicleApp;
 			productReference = 1C4E7FDE2D6248FF00493741 /* RadicleApp.app */;
@@ -242,6 +244,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				1C6067992D6B9A0D007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */,
+				1C6069152D6D5A8E007DEDEE /* XCRemoteSwiftPackageReference "Sourceful" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C4E7FDF2D6248FF00493741 /* Products */;
@@ -638,6 +641,14 @@
 				minimumVersion = 2.4.1;
 			};
 		};
+		1C6069152D6D5A8E007DEDEE /* XCRemoteSwiftPackageReference "Sourceful" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/twostraws/Sourceful";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -645,6 +656,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1C6067992D6B9A0D007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */;
 			productName = MarkdownUI;
+		};
+		1C6069162D6D5B2D007DEDEE /* Sourceful */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C6069152D6D5A8E007DEDEE /* XCRemoteSwiftPackageReference "Sourceful" */;
+			productName = Sourceful;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

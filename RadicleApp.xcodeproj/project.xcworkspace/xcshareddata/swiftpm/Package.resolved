@@ -1,5 +1,5 @@
 {
-  "originHash" : "427e2f78970f33b38feca26c7986bebb5f56cf55a388a29b6bade958aaa6607e",
+  "originHash" : "98d3eacb810098f6b9c582ff77948c57b61a2924f52d97775fa8199f58dc31be",
   "pins" : [
     {
       "identity" : "markdownui",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "2849f5323265386e200484b0d0f896e73c3411b9",
         "version" : "6.0.1"
+      }
+    },
+    {
+      "identity" : "sourceful",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/twostraws/Sourceful",
+      "state" : {
+        "revision" : "77317c0043dc0330e2baf02c43d415bc7cc8a784",
+        "version" : "0.4.0"
       }
     },
     {
