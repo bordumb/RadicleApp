@@ -11,12 +11,12 @@ import Foundation
 struct FileListView: View {
     let rid: String
     let sha: String
-    let path: String?
-    
+    let path: String?  // The path this view is displaying
+
     @State private var files: [FileEntry] = []
     @State private var isLoading = true
     @State private var errorMessage: String?
-    
+
     var body: some View {
         NavigationView {
             VStack {
@@ -27,29 +27,37 @@ struct FileListView: View {
                         .foregroundColor(.red)
                         .padding()
                 } else {
-                    List {
-                        ForEach(groupedFiles(), id: \.key) { (key, entries) in
-                            Section(header: Text(key).foregroundColor(.gray)) {
-                                ForEach(entries, id: \ .path) { file in
-                                    if file.kind == "tree" {
-                                        NavigationLink(destination: FileListView(rid: rid, sha: sha, path: file.path)) {
-                                            HStack {
-                                                Image(systemName: "folder")
-                                                    .foregroundColor(.yellow)
-                                                Text(file.name)
-                                                    .foregroundColor(.white)
-                                            }
-                                        }
-                                    } else {
-                                        NavigationLink(destination: FileView(rid: rid, sha: sha, path: file.path)) {
-                                            HStack {
-                                                Image(systemName: "doc.text")
-                                                    .foregroundColor(.blue)
-                                                Text(file.name)
-                                                    .foregroundColor(.white)
-                                            }
-                                        }
-                                    }
+                    List(files, id: \.path) { file in
+                        // If it's a folder (tree), navigate to FileListView
+                        if file.kind == "tree" {
+                            NavigationLink(
+                                destination: FileListView(
+                                    rid: rid,
+                                    sha: sha,
+                                    path: file.path // Pass subdirectory path
+                                )
+                            ) {
+                                HStack {
+                                    Image(systemName: "folder")
+                                        .foregroundColor(.yellow)
+                                    Text(file.name)
+                                        .foregroundColor(.white)
+                                }
+                            }
+                        } else {
+                            // It's a blob -> open FileView
+                            NavigationLink(
+                                destination: FileView(
+                                    rid: rid,
+                                    sha: sha,
+                                    path: file.path
+                                )
+                            ) {
+                                HStack {
+                                    Image(systemName: "doc.text")
+                                        .foregroundColor(.blue)
+                                    Text(file.name)
+                                        .foregroundColor(.white)
                                 }
                             }
                         }
@@ -64,20 +72,12 @@ struct FileListView: View {
             }
         }
     }
-    
-    private func groupedFiles() -> [(key: String, value: [FileEntry])] {
-        let grouped = Dictionary(grouping: files) { file in
-            let components = file.path.split(separator: "/").dropLast()
-            return components.isEmpty ? "Root" : components.joined(separator: "/")
-        }
-        return grouped.sorted { $0.key < $1.key }
-    }
-    
+
     private func fetchFiles() {
         Task {
             do {
-                print("🌍 Fetching file list for repo: \(rid) with SHA: \(sha) and Path: \(path ?? "root")")
-                let fetchedFiles = try await FileService.shared.fetchFileList(rid: rid, sha: sha)
+                print("🌍 Fetching file list for repo: \(rid) with SHA: \(sha) and path: \(path ?? "root")")
+                let fetchedFiles = try await FileService.shared.fetchFileList(rid: rid, sha: sha, path: path)
                 DispatchQueue.main.async {
                     self.files = fetchedFiles
                     self.isLoading = false
