@@ -33,21 +33,6 @@ class FileService: FileServiceProtocol {
         return readmeResponse
     }
     
-//    func fetchFileList(rid: String, sha: String) async throws -> [FileEntry] {
-//        do {
-//            let endpoint = "repos/\(rid)/tree/\(sha)/"
-//            print("🌍 API Request: https://seed.radicle.xyz/api/v1/\(endpoint)")
-//            
-//            let response: FileListResponse = try await APIClient.shared.fetch(endpoint: endpoint)
-//            
-//            print("📡 API Response: \(response)")
-//            return response.entries
-//        } catch let error as NSError {
-//            print("❌ API Request Failed: \(error), UserInfo: \(error.userInfo)")
-//            throw error
-//        }
-//    }
-    
     func fetchFileList(rid: String, sha: String, path: String?) async throws -> [FileEntry] {
             do {
                 // If path is not nil, append it to the base tree endpoint
