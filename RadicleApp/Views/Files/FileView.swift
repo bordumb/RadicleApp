@@ -9,6 +9,13 @@ struct FileView: View {
     @State private var isLoading = true
     @State private var errorMessage: String?
     
+    var language: Language {
+        if path.hasSuffix(".swift") { return .swift }
+        if path.hasSuffix(".py")    { return .python }
+        if path.hasSuffix(".js")    { return .javascript }
+        return .swift // Default fallback (or you can define `.unknown` if needed)
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             if isLoading {
@@ -23,14 +30,14 @@ struct FileView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 
-                ScrollView {
-                    Text(file.content ?? "No content available")
-                        .font(.system(.body, design: .monospaced))
+                // Show code with highlight + line numbers
+                if let content = file.content {
+                    FileCodeView(code: content, language: language)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    Text("No content available or it's a binary file.")
                         .foregroundColor(.white)
-                        .padding()
                 }
-                .background(Color.black.opacity(0.8))
-                .cornerRadius(10)
             } else if let errorMessage = errorMessage {
                 Text("Error: \(errorMessage)")
                     .foregroundColor(.red)
