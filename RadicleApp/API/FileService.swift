@@ -8,22 +8,13 @@
 import Foundation
 
 protocol FileServiceProtocol {
-//    func fetchFileTree(rid: String, sha: String) async throws -> [File]
-//    func fetchFile(rid: String, sha: String, path: String) async throws -> File
     func fetchReadme(rid: String) async throws -> ReadmeResponse
+    func fetchFileBlob(rid: String, sha: String, path: String) async throws -> RepoFile
 }
 
 class FileService: FileServiceProtocol {
     static let shared = FileService()
     private init() {}
-
-//    func fetchFileTree(rid: String, sha: String) async throws -> [File] {
-//        return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/tree/\(sha)")
-//    }
-//
-//    func fetchFile(rid: String, sha: String, path: String) async throws -> File {
-//        return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/blob/\(sha)/\(path)")
-//    }
 
     func fetchReadme(rid: String) async throws -> ReadmeResponse {
         let latestCommitSHA = try await fetchLatestCommitSHA(rid: rid)
@@ -42,22 +33,43 @@ class FileService: FileServiceProtocol {
         return readmeResponse
     }
     
+    func fetchFileList(rid: String, sha: String) async throws -> [FileEntry] {
+        do {
+            let endpoint = "repos/\(rid)/tree/\(sha)/"
+            print("🌍 API Request: https://seed.radicle.xyz/api/v1/\(endpoint)")
+            
+            let response: FileListResponse = try await APIClient.shared.fetch(endpoint: endpoint)
+            
+            print("📡 API Response: \(response)")
+            return response.entries
+        } catch let error as NSError {
+            print("❌ API Request Failed: \(error), UserInfo: \(error.userInfo)")
+            throw error
+        }
+    }
+    
+    func fetchFileBlob(rid: String, sha: String, path: String) async throws -> RepoFile {
+        do {
+            return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/blob/\(sha)/\(path)")
+        } catch let error as NSError {
+            print("Fetch File Blob Error: \(error.localizedDescription)")
+            throw error
+        }
+    }
+    
     private func fetchLatestCommitSHA(rid: String) async throws -> String {
         let commits = try await CommitService.shared.fetchCommits(rid: rid)
 
-        // Debug print all commit SHAs and timestamps
         print("Fetched \(commits.count) commits for repository: \(rid)")
 
         for commit in commits {
             print("Commit ID: \(commit.id), Time: \(commit.committer.time)")
         }
 
-        // Sorting and selecting the latest commit
         guard let latestCommit = commits.sorted(by: { $0.committer.time > $1.committer.time }).first else {
             throw NSError(domain: "FileServiceError", code: 0, userInfo: [NSLocalizedDescriptionKey: "No commits found"])
         }
 
-        // Debug print the latest commit SHA
         print("Latest Commit SHA: \(latestCommit.id)")
 
         return latestCommit.id
