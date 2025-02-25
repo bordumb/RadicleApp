@@ -15,7 +15,7 @@ struct RepositoryDetailView: View {
     @State private var readmeContent: String = "Loading..."
     @State private var selectedBranch: String = "master"
     @State private var commitHistory: [CommitResponse] = []
-    @State private var selectedTab: TabSelection = .files // Track active tab
+    @State private var selectedTab: TabSelection = .files
     @EnvironmentObject var apiClient: APIClient
     
     var repositoryURL: String {
@@ -26,21 +26,21 @@ struct RepositoryDetailView: View {
         case files, commits
     }
 
+    var latestCommitSHA: String? {
+        commitHistory.first?.id
+    }
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 12) {
-                
-                // 🏷️ Repository Name & URL Copy Button
                 HStack {
                     Text(repository.payloads.xyzRadicleProject?.data.name ?? "Unknown Repository")
                         .font(.title)
                         .bold()
                         .foregroundColor(.white)
-                    
                     Spacer()
-
                     Button(action: {
                         UIPasteboard.general.string = repositoryURL
                     }) {
@@ -51,16 +51,11 @@ struct RepositoryDetailView: View {
                             .clipShape(Circle())
                     }
                 }
-
-                // 🌱 Seeder Count
                 Text("🌱 Seeders: \(repository.seeding)")
                     .foregroundColor(.white.opacity(0.7))
-
-                // 🔻 Branch Selection
                 HStack {
                     Text("Branch:")
                         .foregroundColor(.white)
-
                     Menu {
                         Button("master") { selectedBranch = "master" }
                         ForEach(commitHistory.map { $0.id.prefix(7) }, id: \.self) { commitID in
@@ -74,21 +69,13 @@ struct RepositoryDetailView: View {
                             .foregroundColor(.white)
                     }
                 }
-
-                // 📝 Latest Commit Information
-                let selectedCommit = selectedBranch == "master"
-                    ? commitHistory.first
-                    : commitHistory.first(where: { $0.id.hasPrefix(selectedBranch) })
-
-                if let commit = selectedCommit {
+                let selectedCommitSHA = selectedBranch == "master" ? latestCommitSHA : selectedBranch
+                if let commit = commitHistory.first(where: { $0.id == selectedCommitSHA }) {
                     Text("Latest Commit: \(commit.id.prefix(7)) - \(commit.summary)")
                         .font(.caption)
                         .foregroundColor(.white.opacity(0.8))
                 }
-
-                // 🗂️ Tabs for Files & Commits
                 HStack {
-                    // 📂 Files Tab
                     Button(action: { selectedTab = .files }) {
                         Text("Files")
                             .foregroundColor(selectedTab == .files ? .black : .white)
@@ -96,8 +83,6 @@ struct RepositoryDetailView: View {
                             .background(selectedTab == .files ? Color.white : Color.gray.opacity(0.2))
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-
-                    // 📜 Commits Tab
                     Button(action: { selectedTab = .commits }) {
                         Text("Commits")
                             .foregroundColor(selectedTab == .commits ? .black : .white)
@@ -107,12 +92,15 @@ struct RepositoryDetailView: View {
                     }
                 }
                 .padding(.vertical, 6)
-
-                // 🔹 Toggle between Tabs
                 if selectedTab == .files {
-                    // 📂 FILES TAB CONTENT
                     VStack(alignment: .leading, spacing: 10) {
-                        Button(action: {}) {
+                        NavigationLink(
+                            destination: FileTreeRootView(
+                                rid: repository.id,
+                                sha: latestCommitSHA ?? "unknown",
+                                path: nil
+                            )
+                        ) {
                             Text("Browse")
                                 .frame(maxWidth: .infinity)
                                 .padding()
@@ -120,12 +108,9 @@ struct RepositoryDetailView: View {
                                 .cornerRadius(8)
                                 .foregroundColor(.white)
                         }
-
-                        // 📖 README Section
                         Text("README.md")
                             .font(.headline)
                             .foregroundColor(.white)
-
                         ScrollView {
                             Markdown(readmeContent)
                                 .markdownTheme(.gitHub)
@@ -134,11 +119,9 @@ struct RepositoryDetailView: View {
                         }
                         .background(Color.black.opacity(0.1))
                         .cornerRadius(10)
-
                         Spacer()
                     }
                 } else {
-                    // 📜 COMMITS TAB CONTENT
                     ScrollView {
                         ForEach(groupCommitsByDate(), id: \.key) { date, commits in
                             VStack(alignment: .leading, spacing: 4) {
@@ -146,17 +129,14 @@ struct RepositoryDetailView: View {
                                     .font(.headline)
                                     .foregroundColor(.white)
                                     .padding(.top, 8)
-
                                 ForEach(commits, id: \.id) { commit in
                                     VStack(alignment: .leading, spacing: 2) {
                                         Text(commit.summary)
                                             .font(.body)
                                             .foregroundColor(.white)
-
                                         Text("\(commit.author.name) committed \(commit.id.prefix(7))")
                                             .font(.caption)
                                             .foregroundColor(.gray)
-
                                         Text("\(timeAgo(from: commit.committer.time))")
                                             .font(.caption2)
                                             .foregroundColor(.gray.opacity(0.7))
@@ -179,7 +159,6 @@ struct RepositoryDetailView: View {
             await fetchCommits()
         }
     }
-
     // 📥 Fetch README Content
     func fetchReadme() async {
         do {

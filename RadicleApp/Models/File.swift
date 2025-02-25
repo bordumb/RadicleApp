@@ -34,3 +34,34 @@ struct ReadmeResponse: Codable {
         }
     }
 }
+
+struct RepoFile: Codable {
+    let name: String
+    let path: String
+    let content: String?
+    let binary: Bool?
+}
+
+//struct FileEntry: Codable, Identifiable {
+//    let id = UUID()
+//    let path: String
+//    let oid: String
+//    let name: String
+//    let kind: String
+//    
+//    enum CodingKeys: String, CodingKey {
+//        case path, oid, name, kind
+//    }
+//}
+
+struct FileEntry: Codable, Identifiable {
+    var id: String { path }
+    let path: String
+    let oid: String
+    let name: String
+    let kind: String
+}
+
+struct FileListResponse: Codable {
+    let entries: [FileEntry]
+}
