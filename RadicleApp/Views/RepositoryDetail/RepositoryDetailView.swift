@@ -13,7 +13,7 @@ struct RepositoryDetailView: View {
     let repository: RepoItem
 
     @State private var readmeContent: String = "Loading..."
-    @State private var selectedBranch: String = "master"
+    @State private var selectedBranch: String = "main"
     @State private var commitHistory: [CommitResponse] = []
     @State private var selectedTab: TabSelection = .files
     @EnvironmentObject var apiClient: APIClient
@@ -94,19 +94,16 @@ struct RepositoryDetailView: View {
                 .padding(.vertical, 6)
                 if selectedTab == .files {
                     VStack(alignment: .leading, spacing: 10) {
-                        NavigationLink(
-                            destination: FileTreeRootView(
-                                rid: repository.id,
-                                sha: latestCommitSHA ?? "unknown",
-                                path: nil
-                            )
-                        ) {
-                            Text("Browse")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(8)
-                                .foregroundColor(.white)
+                        // Browse Files Button
+                        if let latestCommitSHA = latestCommitSHA {
+                            NavigationLink(destination: FileListView(rid: repository.id, sha: latestCommitSHA, path: nil)) {
+                                Text("Browse")
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.gray.opacity(0.2))
+                                    .cornerRadius(8)
+                                    .foregroundColor(.white)
+                            }
                         }
                         Text("README.md")
                             .font(.headline)
