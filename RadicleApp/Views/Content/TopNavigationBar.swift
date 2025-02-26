@@ -13,11 +13,12 @@ struct TopNavigationBar: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            Image("home_icon")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 24, height: 24)
-            Text("")
+            NavigationLink(destination: ContentView()) {
+                Image("home_icon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+            }
 
             Text(selectedServer)  // Show the selected node
                 .foregroundColor(.blue)
@@ -37,5 +38,8 @@ struct TopNavigationBar: View {
 }
 
 #Preview {
-    TopNavigationBar()
+    NavigationStack {
+        TopNavigationBar()
+    }
 }
+

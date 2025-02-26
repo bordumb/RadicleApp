@@ -40,7 +40,7 @@ struct RepoFile: Codable {
     let path: String
     let content: String?
     let binary: Bool?
-    let lastCommit: CommitDetails?  // ✅ Include commit metadata
+    let lastCommit: CommitResponse?
 
     struct CommitDetails: Codable {
         let id: String

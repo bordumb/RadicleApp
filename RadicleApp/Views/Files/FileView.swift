@@ -135,17 +135,20 @@ struct FileView: View {
             if isLoading {
                 ProgressView("Loading file...")
             } else if let file = file {
-                Text(file.name)
-                    .font(.title2)
-                    .bold()
-                    .foregroundColor(.white)
                 
-                if let commit = file.lastCommit {
-                    Text("Commit: \(commit.id.prefix(7)) - \(commit.summary)")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
+                HStack {
+                    Text(file.name)
+                        .font(.title2)
+                        .bold()
+                        .foregroundColor(.white)
+
+                    Spacer()
+                    
+                    if let commit = file.lastCommit {
+                        CommitDiffLink(rid: rid, commit: commit)
+                    }
                 }
-                
+
                 // Show code with highlight + line numbers
                 if let content = file.content {
                     FileCodeView(code: content, language: language)
