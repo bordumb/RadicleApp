@@ -40,26 +40,41 @@ struct RepoFile: Codable {
     let path: String
     let content: String?
     let binary: Bool?
+    let lastCommit: CommitResponse?
+
+    struct CommitDetails: Codable {
+        let id: String
+        let author: Author
+        let summary: String
+        let description: String?
+        let parents: [String]
+        let committer: Committer
+        
+        struct Author: Codable {
+            let name: String
+            let email: String
+        }
+        
+        struct Committer: Codable {
+            let name: String
+            let email: String
+            let time: Int
+        }
+    }
 }
 
-//struct FileEntry: Codable, Identifiable {
-//    let id = UUID()
-//    let path: String
-//    let oid: String
-//    let name: String
-//    let kind: String
-//    
-//    enum CodingKeys: String, CodingKey {
-//        case path, oid, name, kind
-//    }
-//}
-
-struct FileEntry: Codable, Identifiable {
-    var id: String { path }
-    let path: String
-    let oid: String
+struct FileEntry: Identifiable, Codable { // ✅ Add Codable (which includes both Decodable & Encodable)
+    let id: String // Unique identifier (use `oid` as ID)
     let name: String
-    let kind: String
+    let path: String
+    let kind: String // "blob" for files, "tree" for folders
+    
+    enum CodingKeys: String, CodingKey {
+        case id = "oid"  // Use `oid` as the unique identifier
+        case name
+        case path
+        case kind
+    }
 }
 
 struct FileListResponse: Codable {
