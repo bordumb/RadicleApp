@@ -7,92 +7,90 @@
 
 import SwiftUI
 
-// Declare the Rust functions
-@_silgen_name("get_git_version")
-func get_git_version() -> UnsafePointer<CChar>?
-
-@_silgen_name("clone_repo")
-func clone_repo(_ url: UnsafePointer<CChar>, _ path: UnsafePointer<CChar>) -> Int32
-
-@_silgen_name("free_c_string")
-func free_c_string(_ ptr: UnsafeMutablePointer<CChar>)
-
 struct ContentView: View {
-    @StateObject private var gitViewModel = GitViewModel()
-    
-    var body: some View {
-        VStack(spacing: 20) {
-            Text("Git Version: \(gitViewModel.gitVersion)")
-                .padding()
-            
-            Button("Fetch Git Version") {
-                gitViewModel.fetchGitVersion()
-            }
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(8)
+    @EnvironmentObject var apiClient: APIClient
 
-            Button("Clone Repository") {
-                let success = gitViewModel.cloneRepository(
-                    url: "https://github.com/bordumb/wsbtrading",
-                    path: "/tmp/repo"
-                )
-                print(success ? "Clone successful!" : "Clone failed.")
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor(red: 16/255, green: 12/255, blue: 20/255, alpha: 1.0)
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
+
+    var body: some View {
+
+        VStack {
+
+            TopNavigationBar()  // Wrapping the existing structure
+
+            TabView {
+                RepositoryListView()
+                    .tabItem {
+                        VStack {
+                            Image("home_icon")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                            Text("Home")
+                        }
+                    }
+
+                SettingsView()
+                    .tabItem {
+                        VStack {
+                            Image(systemName: "gearshape.fill")
+                            Text("Settings")
+                        }
+                    }
             }
-            .padding()
-            .background(Color.green)
-            .foregroundColor(.white)
-            .cornerRadius(8)
+            .tint(.gray)
+            .edgesIgnoringSafeArea(.bottom)
         }
-        .padding()
     }
 }
 
-
-
-//
 //import SwiftUI
 //
+//// Declare the Rust functions
+//@_silgen_name("get_git_version")
+//func get_git_version() -> UnsafePointer<CChar>?
+//
+//@_silgen_name("clone_repo")
+//func clone_repo(_ url: UnsafePointer<CChar>, _ path: UnsafePointer<CChar>) -> Int32
+//
+//@_silgen_name("free_c_string")
+//func free_c_string(_ ptr: UnsafeMutablePointer<CChar>)
+//
 //struct ContentView: View {
-//    @EnvironmentObject var apiClient: APIClient
-//
-//    init() {
-//        let appearance = UITabBarAppearance()
-//        appearance.configureWithOpaqueBackground()
-//        appearance.backgroundColor = UIColor.black
-//        UITabBar.appearance().standardAppearance = appearance
-//        UITabBar.appearance().scrollEdgeAppearance = appearance
-//    }
-//
+//    @StateObject private var gitViewModel = GitViewModel()
+//    
 //    var body: some View {
-//
-//        VStack {
-//
-//            TopNavigationBar()  // Wrapping the existing structure
-//
-//            TabView {
-//                RepositoryListView()
-//                    .tabItem {
-//                        VStack {
-//                            Image("home_icon")
-//                                .resizable()
-//                                .scaledToFit()
-//                                .frame(width: 24, height: 24)
-//                            Text("Home")
-//                        }
-//                    }
-//
-//                SettingsView()
-//                    .tabItem {
-//                        VStack {
-//                            Image(systemName: "gearshape.fill")
-//                            Text("Settings")
-//                        }
-//                    }
+//        VStack(spacing: 20) {
+//            Text("Git Version: \(gitViewModel.gitVersion)")
+//                .padding()
+//            
+//            Button("Fetch Git Version") {
+//                gitViewModel.fetchGitVersion()
 //            }
-//            .tint(.gray)
-//            .edgesIgnoringSafeArea(.bottom)
+//            .padding()
+//            .background(Color.blue)
+//            .foregroundColor(.white)
+//            .cornerRadius(8)
+//
+//            Button("Clone Repository") {
+//                let success = gitViewModel.cloneRepository(
+//                    url: "https://github.com/bordumb/wsbtrading",
+//                    path: "/tmp/repo"
+//                )
+//                print(success ? "Clone successful!" : "Clone failed.")
+//            }
+//            .padding()
+//            .background(Color.green)
+//            .foregroundColor(.white)
+//            .cornerRadius(8)
 //        }
+//        .padding()
 //    }
 //}
+

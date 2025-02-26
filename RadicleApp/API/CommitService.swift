@@ -9,7 +9,7 @@ import Foundation
 
 protocol CommitServiceProtocol {
     func fetchCommits(rid: String) async throws -> [CommitResponse]
-    func fetchCommitDetails(rid: String, commit: String) async throws -> CommitResponse
+    func fetchCommitDetails(rid: String, commit: String) async throws -> CommitDetailsResponse
     func fetchDiff(rid: String, base: String, oid: String) async throws -> DiffResponse
 }
 
@@ -43,8 +43,7 @@ class CommitService: CommitServiceProtocol {
         return commits
     }
 
-
-    func fetchCommitDetails(rid: String, commit: String) async throws -> CommitResponse {
+    func fetchCommitDetails(rid: String, commit: String) async throws -> CommitDetailsResponse {
         return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/commits/\(commit)")
     }
 
