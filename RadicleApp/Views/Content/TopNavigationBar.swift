@@ -26,9 +26,6 @@ struct TopNavigationBar: View {
 
             Spacer()
 
-            Image(systemName: "person.crop.circle")
-                .foregroundColor(.white)
-                .font(.title2)
         }
         .padding(.horizontal)
         .padding(.top, 8)

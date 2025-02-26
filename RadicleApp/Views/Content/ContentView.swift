@@ -13,7 +13,7 @@ struct ContentView: View {
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(red: 16/255, green: 12/255, blue: 20/255, alpha: 1.0)
+        appearance.backgroundColor = UIColor(Color.backgroundDefault) // Convert SwiftUI Color to UIColor
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
     }
@@ -39,7 +39,7 @@ struct ContentView: View {
                 SettingsView()
                     .tabItem {
                         VStack {
-                            Image(systemName: "gearshape.fill")
+                            Icon(name: .settings, size: 24) // Use your custom Icon component
                             Text("Settings")
                         }
                     }
