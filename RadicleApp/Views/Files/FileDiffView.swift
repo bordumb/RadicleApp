@@ -7,20 +7,23 @@
 
 import SwiftUI
 
+class DiffFileViewModel: ObservableObject {
+    @Published var isExpanded: Bool = false
+}
+
 struct FileDiffView: View {
     let file: DiffFile
-    @State private var isExpanded = false // Track collapse state
+    @StateObject private var viewModel = DiffFileViewModel() // 🔥 Tracks expansion without slow re-renders
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
-            // 🔹 File Header (Clickable to Expand/Collapse)
             Button(action: {
                 withAnimation {
-                    isExpanded.toggle()
+                    viewModel.isExpanded.toggle()
                 }
             }) {
                 HStack {
-                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                    Image(systemName: viewModel.isExpanded ? "chevron.down" : "chevron.right")
                         .foregroundColor(.gray)
 
                     Text(file.path)
@@ -36,45 +39,46 @@ struct FileDiffView: View {
                         .background(file.statusColor)
                         .cornerRadius(4)
                 }
-                .padding(.vertical, 10) // Keep vertical padding
-                .contentShape(Rectangle()) // Make button tappable in full area
+                .padding(.vertical, 10)
+                .contentShape(Rectangle())
             }
-            .buttonStyle(PlainButtonStyle()) // Remove default button styling
+            .buttonStyle(PlainButtonStyle())
 
-            // 🔹 Expandable Content (Diff Hunks)
-            if isExpanded {
-                if let diff = file.diff {
-                    VStack(alignment: .leading, spacing: 5) {
-                        ForEach(diff.hunks, id: \.header) { hunk in
+            if viewModel.isExpanded {
+                if let hunks = file.diff?.hunks, !hunks.isEmpty {
+                    LazyVStack(alignment: .leading, spacing: 5) {
+                        ForEach(hunks, id: \.header) { hunk in
                             FileHunkView(hunk: hunk)
                         }
                     }
                     .padding(.top, 5)
                 } else {
-                    Text("No diff available.")
+                    Text("No changes in this file")
                         .foregroundColor(.gray)
+                        .font(.caption)
                         .padding(.top, 5)
                 }
             }
         }
-        .frame(maxWidth: .infinity) // 🛠️ Make it fully expand horizontally
+        .frame(maxWidth: .infinity)
         .background(Color.black.opacity(0.2))
-        .overlay( // Only top & bottom border, no left/right
+        .overlay(
             VStack {
                 Rectangle()
                     .fill(Color.gray.opacity(0.4))
-                    .frame(height: 1) // Thin top border
+                    .frame(height: 1)
                 Spacer()
                 Rectangle()
                     .fill(Color.gray.opacity(0.4))
-                    .frame(height: 1) // Thin bottom border
+                    .frame(height: 1)
             }
         )
-        .padding(.vertical, 5) // Keep vertical spacing
-}
+        .padding(.vertical, 5)
+    }
 }
 
-// ✅ Extracted View for Hunks
+
+// Extracted View for Hunks
 struct FileHunkView: View {
     let hunk: DiffHunk
 
@@ -84,22 +88,33 @@ struct FileHunkView: View {
                 .font(.system(.caption, design: .monospaced))
                 .foregroundColor(.gray)
 
-            ForEach(hunk.lines, id: \.line) { line in
-                Text(line.line)
-                    .font(.system(.body, design: .monospaced))
-                    .foregroundColor(line.typeColor)
+            if !hunk.lines.isEmpty {
+                ForEach(hunk.lines, id: \.line) { line in
+                    HStack {
+                        Text(line.line)
+                            .font(.system(.body, design: .monospaced))
+                            .foregroundColor(line.typeColor)
+                        Spacer()
+                    }
+                    .padding(.leading, 10)
+                }
+            } else {
+                Text("No changes in this hunk")
+                    .font(.caption)
+                    .foregroundColor(.gray)
                     .padding(.leading, 10)
             }
         }
         .padding()
         .background(Color.black.opacity(0.15))
+        .cornerRadius(6)
     }
 }
 
-// ✅ Break Out Status Color Logic
+// Extracted Status Color Logic for File Status
 extension DiffFile {
     var statusColor: Color {
-        switch status {
+        switch status.lowercased() {
         case "added": return Color.green.opacity(0.3)
         case "modified": return Color.blue.opacity(0.3)
         case "deleted": return Color.red.opacity(0.3)
@@ -108,7 +123,7 @@ extension DiffFile {
     }
 }
 
-// ✅ Break Out Type Color Logic
+// Extracted Type Color Logic for Diff Line Type
 extension DiffLine {
     var typeColor: Color {
         switch type {

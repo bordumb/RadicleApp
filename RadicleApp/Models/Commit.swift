@@ -9,6 +9,8 @@
 struct CommitDetailsResponse: Codable {
     let commit: CommitResponse
     let diff: CommitDiff?
+    let hasMore: Bool? // Add this to indicate more pages
+    let nextPage: String? // Holds the next page URL (optional)
 }
 
 // MARK: - CommitResponse (Remains the same)
@@ -28,22 +30,33 @@ struct CommitDiff: Codable {
 }
 
 // MARK: - DiffFile
-struct DiffFile: Codable, Identifiable {
-    let status: String  // "added", "modified"
+struct DiffFile: Codable, Identifiable, Equatable {
+    let status: String
     let path: String
     let diff: FileDiff?
     let old: DiffObject?
     let new: DiffObject?
 
-    var id: String { path } // Using path as a unique identifier
+    var id: String { path }
+
+    // Add `Equatable` conformance
+    static func == (lhs: DiffFile, rhs: DiffFile) -> Bool {
+        return lhs.path == rhs.path
+    }
 }
+
 
 // MARK: - FileDiff
 struct FileDiff: Codable {
-    let type: String // "plain"
-    let hunks: [DiffHunk]
-    let eof: String
+    let type: String  // "plain"
+    let hunks: [DiffHunk]?
+    let eof: String? // 👈 Make "eof" optional
+
+    enum CodingKeys: String, CodingKey {
+        case type, hunks, eof
+    }
 }
+
 
 // MARK: - DiffHunk
 struct DiffHunk: Codable {

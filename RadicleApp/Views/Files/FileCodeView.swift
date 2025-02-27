@@ -51,7 +51,7 @@ struct FileCodeView: UIViewRepresentable {
             }
         }
 
-        // ✅ Required by SyntaxTextViewDelegate
+        // Required by SyntaxTextViewDelegate
         func didChangeText(_ syntaxTextView: SyntaxTextView) {
             // No-op for read-only display
         }

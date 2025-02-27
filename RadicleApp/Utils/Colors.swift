@@ -13,6 +13,7 @@ extension Color {
     static let backgroundDefault = Color(hex: "#0a0d10") // Dark background
     static let backgroundFloat = Color(hex: "#14151a") // Floating elements background
     static let fillGhost = Color(hex: "#24252d")
+    static let foregroundPink = Color(hex: "#dc38ff")
 }
 
 extension Color {

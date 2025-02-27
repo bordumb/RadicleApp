@@ -9,7 +9,7 @@ import Foundation
 
 protocol CommitServiceProtocol {
     func fetchCommits(rid: String) async throws -> [CommitResponse]
-    func fetchCommitDetails(rid: String, commit: String) async throws -> CommitDetailsResponse
+    func fetchCommitDetails(rid: String, commit: String, nextPage: String?) async throws -> CommitDetailsResponse
     func fetchDiff(rid: String, base: String, oid: String) async throws -> DiffResponse
 }
 
@@ -17,9 +17,6 @@ class CommitService: CommitServiceProtocol {
     static let shared = CommitService()
     private init() {}
 
-//    func fetchCommits(rid: String) async throws -> [CommitResponse] {
-//        return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/commits")
-//    }
     func fetchCommits(rid: String) async throws -> [CommitResponse] {
         let commits: [CommitResponse] = try await APIClient.shared.fetch(endpoint: "repos/\(rid)/commits")
 
@@ -43,8 +40,11 @@ class CommitService: CommitServiceProtocol {
         return commits
     }
 
-    func fetchCommitDetails(rid: String, commit: String) async throws -> CommitDetailsResponse {
-        return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/commits/\(commit)")
+
+    /// Fetch commit details, with optional pagination
+    func fetchCommitDetails(rid: String, commit: String, nextPage: String? = nil) async throws -> CommitDetailsResponse {
+        let endpoint = nextPage ?? "repos/\(rid)/commits/\(commit)" // Use `nextPage` if provided
+        return try await APIClient.shared.fetch(endpoint: endpoint)
     }
 
     func fetchDiff(rid: String, base: String, oid: String) async throws -> DiffResponse {

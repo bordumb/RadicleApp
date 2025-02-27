@@ -13,7 +13,8 @@ struct RepositoryDetailView: View {
     let repository: RepoItem
 
     @State private var readmeContent: String = "Loading..."
-    @State private var selectedBranch: String = "main"
+    @State private var selectedBranch: String = "master"
+    @State private var remotes: [Remote] = []
     @State private var commitHistory: [CommitResponse] = []
     @State private var selectedTab: TabSelection = .files
     @EnvironmentObject var apiClient: APIClient
@@ -52,7 +53,42 @@ struct RepositoryDetailView: View {
                     }
                 }
 
-                BranchSelectorDropdown(selectedBranch: $selectedBranch, commitHistory: commitHistory, canonicalBranch: "main")
+//                if let projectMeta = repository.payloads.xyzRadicleProject?.meta {
+//                    BranchSelectorDropdown(
+//                        selectedBranch: $selectedBranch,
+//                        commitHistory: commitHistory,
+//                        canonicalBranch: repository.payloads.xyzRadicleProject?.data.defaultBranch ?? "master",
+//                        headSHA: repository.payloads.xyzRadicleProject?.meta.head ?? ""
+//                    )
+//
+//                } else {
+//                    Text("Loading...") // Handle case where data isn't available yet
+//                }
+                
+                if !remotes.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        // 🔹 Branch Selector Dropdown
+                        RemoteSelectorDropdown(
+                            selectedBranch: $selectedBranch,
+                            remotes: remotes
+                        )
+
+                        // 🔹 Commit Details View (Only show if there's a valid commit history)
+                        if !commitHistory.isEmpty {
+                            RemoteCommitDetails(
+                                selectedBranch: $selectedBranch,
+                                commitHistory: commitHistory
+                            )
+                        } else {
+                            Text("No commits found")
+                                .foregroundColor(.gray)
+                                .padding()
+                        }
+                    }
+                } else {
+                    Text("Loading Remotes...")
+                }
+
                 
                 HStack {
                     Button(action: { selectedTab = .files }) {
@@ -142,6 +178,7 @@ struct RepositoryDetailView: View {
         .task {
             await fetchReadme()
             await fetchCommits()
+            await fetchRemotes()
         }
     }
     // 📥 Fetch README Content
@@ -160,6 +197,14 @@ struct RepositoryDetailView: View {
             commitHistory = try await CommitService.shared.fetchCommits(rid: repository.id)
         } catch {
             commitHistory = []
+        }
+    }
+    
+    func fetchRemotes() async {
+        do {
+            self.remotes = try await RepositoryService.shared.fetchRemotes(rid: repository.id)
+        } catch {
+            print("Error loading remotes: \(error)")
         }
     }
 

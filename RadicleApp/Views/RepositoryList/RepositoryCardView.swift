@@ -79,8 +79,8 @@ struct RepositoryCardView: View {
                         Text("\(repository.payloads.xyzRadicleProject?.meta.patches.open ?? 0)")
                             .font(.caption)
                             .foregroundColor(.customWhite)
-
-                        Text("Updated 2 days ago") // Placeholder for now
+                        
+                        Text("Updated \(DateUtils.daysAgo(from: activityData.max() ?? 0)) days ago")
                             .font(.caption)
                             .foregroundColor(.customWhite)
 
@@ -109,3 +109,4 @@ struct RepositoryCardView: View {
             }
     }
 }
+
