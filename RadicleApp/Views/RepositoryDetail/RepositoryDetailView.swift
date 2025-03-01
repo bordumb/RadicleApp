@@ -43,7 +43,7 @@ struct RepositoryDetailView: View {
                         .foregroundColor(.white)
                     Spacer()
                     
-                    LinkButton(URL: repositoryURL)
+                    PageLinkButton(URL: repositoryURL)
                     
                     HStack(spacing: 4) {
                         Icon(name: .radicleSeed, size: 16)
@@ -53,18 +53,6 @@ struct RepositoryDetailView: View {
                     }
                 }
 
-//                if let projectMeta = repository.payloads.xyzRadicleProject?.meta {
-//                    BranchSelectorDropdown(
-//                        selectedBranch: $selectedBranch,
-//                        commitHistory: commitHistory,
-//                        canonicalBranch: repository.payloads.xyzRadicleProject?.data.defaultBranch ?? "master",
-//                        headSHA: repository.payloads.xyzRadicleProject?.meta.head ?? ""
-//                    )
-//
-//                } else {
-//                    Text("Loading...") // Handle case where data isn't available yet
-//                }
-                
                 if !remotes.isEmpty {
                     VStack(alignment: .leading, spacing: 8) {
                         // 🔹 Branch Selector Dropdown

@@ -59,7 +59,7 @@ struct RepositoryCardView: View {
                             ActivityDiagram(activity: activityData, viewBoxHeight: 40, styleColor: Color(.systemBlue))
                             .frame(height: 40)
                             .padding(.horizontal, 10) // Add horizontal padding
-                            .background(Color.black.opacity(0.1)) // Subtle background
+                            .background(Color.black.opacity(0.0)) // Subtle background
                             .clipShape(RoundedRectangle(cornerRadius: 6))
                         }
                     }

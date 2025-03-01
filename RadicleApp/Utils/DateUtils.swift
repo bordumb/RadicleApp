@@ -20,6 +20,14 @@ struct DateUtils {
         let components = calendar.dateComponents([.day], from: date, to: now)
         return components.day ?? 0
     }
+    
+    static func formatDate(_ timestamp: Int) -> String {
+            let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
+            let formatter = DateFormatter()
+            formatter.dateFormat = "MMM d, yyyy HH:mm"
+            return formatter.string(from: date)
+    }
 }
+
 
 

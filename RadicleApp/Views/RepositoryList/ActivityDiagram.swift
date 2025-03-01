@@ -5,35 +5,35 @@
 //  Created by bordumb on 16/02/2025.
 //
 
-//
-//  ActivityDiagram.swift
-//  RadicleApp
-//
-//  Created by bordumb on 16/02/2025.
-//
+import SwiftUI
+
+struct WeeklyActivity: Identifiable {
+    let id = UUID()
+    let date: Date
+    let week: Int
+    var commits: [Int]
+}
 
 import SwiftUI
 
 struct ActivityDiagram: View {
-    let activity: [Int] // Raw activity data (commits per day)
+    let activity: [Int] // Raw commit timestamps (UNIX seconds)
     let viewBoxHeight: CGFloat
     let styleColor: Color
     private let strokeWidth: CGFloat = 2
     private let viewBoxWidth: CGFloat = 280
-    private let minimalHeight: CGFloat = 5 // Prevents tiny spikes from appearing too big
-    private let weeksToShow = 52 // Show the last 52 weeks (1 year)
+    private let minimalHeight: CGFloat = 5
+    private let weeksToShow = 52
 
     var body: some View {
-        let recentActivity = Array(activity.suffix(weeksToShow * 7)) // Take the last year of activity
-        let weeklyActivity = aggregateActivity(recentActivity) // Aggregate into weekly buckets
-        let normalizedPoints = normalizeActivity(weeklyActivity)
+        let groupedCommits = groupCommitsByWeek(activity)
+        let normalizedPoints = normalizeActivity(groupedCommits)
 
         return ZStack {
-            // Background matching the RepositoryCardView
             Color.clear
 
             if !normalizedPoints.isEmpty {
-                // Render the filled area under the curve
+                // ✅ Reverse Fill Gradient
                 Path { path in
                     guard let firstPoint = normalizedPoints.first else { return }
                     path.move(to: firstPoint)
@@ -42,26 +42,25 @@ struct ActivityDiagram: View {
                         path.addLine(to: point)
                     }
 
-                    // Close the path to fill the area
                     if let lastPoint = normalizedPoints.last {
                         path.addLine(to: CGPoint(x: lastPoint.x, y: viewBoxHeight))
-                        path.addLine(to: CGPoint(x: viewBoxWidth, y: viewBoxHeight))
+                        path.addLine(to: CGPoint(x: 0, y: viewBoxHeight))
                         path.closeSubpath()
                     }
                 }
                 .fill(
                     LinearGradient(
                         gradient: Gradient(stops: [
-                            .init(color: styleColor.opacity(0.2), location: 0),
+                            .init(color: styleColor.opacity(0), location: 0),    // Oldest week fades out
                             .init(color: styleColor.opacity(0.1), location: 0.5),
-                            .init(color: styleColor.opacity(0), location: 1)
+                            .init(color: styleColor.opacity(0.2), location: 1)   // Most recent week is vibrant
                         ]),
-                        startPoint: .top,
-                        endPoint: .bottom
+                        startPoint: .bottom,
+                        endPoint: .top
                     )
                 )
 
-                // Render the activity stroke path
+                // ✅ Reverse Stroke Gradient
                 Path { path in
                     guard let firstPoint = normalizedPoints.first else { return }
                     path.move(to: firstPoint)
@@ -73,9 +72,9 @@ struct ActivityDiagram: View {
                 .stroke(
                     LinearGradient(
                         gradient: Gradient(colors: [
-                            styleColor.opacity(1),
+                            styleColor.opacity(0.2),  // Oldest week fades out
                             styleColor.opacity(0.8),
-                            styleColor.opacity(0.2)
+                            styleColor.opacity(1.0)   // Most recent week is vibrant
                         ]),
                         startPoint: .leading,
                         endPoint: .trailing
@@ -95,121 +94,71 @@ struct ActivityDiagram: View {
         .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
-    /// Aggregates daily activity into weekly buckets
-    private func aggregateActivity(_ data: [Int]) -> [Int] {
-        var weeklyData: [Int] = []
-        var weekSum = 0
 
-        for (index, value) in data.enumerated() {
-            weekSum += value
-            if (index + 1) % 7 == 0 {
-                weeklyData.append(weekSum)
-                weekSum = 0
+    /// Groups commit timestamps into weeks
+    private func groupCommitsByWeek(_ commits: [Int]) -> [WeeklyActivity] {
+        guard !commits.isEmpty else { return [] }
+
+        let sortedCommits = commits.sorted(by: >) // Sort from newest to oldest
+        var groupedCommits: [WeeklyActivity] = []
+        var groupDate: Date? = nil
+        var weekAccumulator = getDaysPassed(from: Date(timeIntervalSince1970: TimeInterval(sortedCommits.first!)), to: Date()) / 7
+
+        for commit in sortedCommits {
+            let commitDate = Date(timeIntervalSince1970: TimeInterval(commit))
+            let isNewWeek = groupDate == nil || getDaysPassed(from: commitDate, to: groupDate!) > 7
+
+            if isNewWeek {
+                let daysPassed = groupDate.map { getDaysPassed(from: commitDate, to: $0) } ?? 0
+                groupedCommits.append(WeeklyActivity(
+                    date: commitDate,
+                    week: weekAccumulator + (daysPassed / 7),
+                    commits: [commit] // Initialize with the first commit
+                ))
+                groupDate = commitDate
+                weekAccumulator += daysPassed / 7
+            } else {
+                // **FIX: Update last week's commits by replacing the struct**
+                if let lastIndex = groupedCommits.indices.last {
+                    var lastGroup = groupedCommits[lastIndex] // Copy the struct
+                    lastGroup.commits.append(commit) // Mutate the copy
+                    groupedCommits[lastIndex] = lastGroup // Replace in array
+                }
             }
         }
 
-        return weeklyData
+        return groupedCommits
     }
 
-    /// Normalizes the aggregated weekly activity for visualization
-    private func normalizeActivity(_ activity: [Int]) -> [CGPoint] {
+
+    /// **Normalizes weekly commit activity for visualization**
+    private func normalizeActivity(_ activity: [WeeklyActivity]) -> [CGPoint] {
         guard !activity.isEmpty else { return [] }
 
-        let maxActivity = activity.max() ?? 1
-        let minActivity = activity.min() ?? 0
+        let commitCounts = activity.map { $0.commits.count }
+        let maxActivity = commitCounts.max() ?? 1
+        let minActivity = commitCounts.min() ?? 0
         let range = max(maxActivity - minActivity, 1) // Prevent division by zero
         let widthStep = viewBoxWidth / CGFloat(activity.count)
 
-        return activity.enumerated().map { (i, count) in
+        return activity.enumerated().map { (i, weeklyData) in
+            let count = weeklyData.commits.count
             let normalizedY = viewBoxHeight - ((viewBoxHeight - minimalHeight) * CGFloat(count - minActivity)) / CGFloat(range)
             return CGPoint(x: CGFloat(i) * widthStep, y: normalizedY)
         }
+    }
+
+    /// **Calculates days passed between two dates**
+    private func getDaysPassed(from startDate: Date, to endDate: Date) -> Int {
+        return Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 0
     }
 }
 
 // MARK: - Preview
 #Preview {
     ActivityDiagram(
-        activity: (0..<365).map { _ in Int.random(in: 0...20) }, // Fake daily activity for last year
+        activity: (0..<365).map { _ in Int.random(in: 1700000000...1702598400) }, // Fake timestamps for last year
         viewBoxHeight: 50,
         styleColor: .blue
     )
 }
-//
-//
-//import SwiftUI
-//
-//struct ActivityDiagram: View {
-//    let activity: [Int] // Raw activity data (commits per day)
-//    let viewBoxHeight: CGFloat
-//    private let strokeWidth: CGFloat = 2
-//    private let viewBoxWidth: CGFloat = 280 // Prevents full-width stretching
-//    private let weeksToShow = 12 // Show only the last 12 weeks (3 months)
-//
-//    var body: some View {
-//        let recentActivity = Array(activity.suffix(weeksToShow * 7)) // Take last 3 months (in days)
-//        let weeklyActivity = aggregateActivity(recentActivity)
-//        let normalizedPoints = normalizeActivity(weeklyActivity)
-//
-//        return ZStack {
-//            // Background color matching the card
-//            Color(UIColor.darkGray)
-//            
-//            // White line graph
-//            Path { path in
-//                guard let firstPoint = normalizedPoints.first else { return }
-//                path.move(to: firstPoint)
-//
-//                for point in normalizedPoints.dropFirst() {
-//                    path.addLine(to: point)
-//                }
-//            }
-//            .stroke(Color.white, lineWidth: strokeWidth)
-//        }
-//        .frame(width: viewBoxWidth, height: viewBoxHeight)
-//        .clipShape(RoundedRectangle(cornerRadius: 6))
-//    }
-//
-//    /// Aggregates daily activity into weekly buckets (each bucket represents 1 week)
-//    private func aggregateActivity(_ data: [Int]) -> [Int] {
-//        let bucketSize = 1 // Each bucket represents 1 days
-//        let weeklyData = stride(from: 0, to: data.count, by: bucketSize).map { index in
-//            data[index..<min(index + bucketSize, data.count)].reduce(0, +) // Sum commits per week
-//        }
-//
-////        print("🔹 [DEBUG] Raw Daily Activity Data (Last \(weeksToShow * 7) days):", data)
-////        print("🔹 [DEBUG] Aggregated Weekly Activity Data:", weeklyData)
-//
-//        return weeklyData
-//    }
-//
-//    /// Normalizes the aggregated weekly activity for visualization
-//    private func normalizeActivity(_ activity: [Int]) -> [CGPoint] {
-//        guard !activity.isEmpty else { return [] }
-//        
-//        let maxActivity = activity.max() ?? 1
-//        let minActivity = activity.min() ?? 0
-//        let range = maxActivity - minActivity
-//
-//        // Prevent division by zero and avoid flat lines
-//        let heightScale = range > 0 ? range : 1
-//        let widthStep = viewBoxWidth / CGFloat(activity.count)
-//
-//        let points = activity.enumerated().map { (i, count) in
-//            let normalizedY = viewBoxHeight - ((viewBoxHeight - 5) * CGFloat(count - minActivity)) / CGFloat(heightScale)
-//            return CGPoint(x: CGFloat(i) * widthStep, y: normalizedY)
-//        }
-//
-////        print("🔹 [DEBUG] Normalized Points for Graph:", points)
-//
-//        return points
-//    }
-//}
-//
-//// MARK: - Preview
-//#Preview {
-//    ActivityDiagram(
-//        activity: (0..<180).map { _ in Int.random(in: 0...20) }, // Last 6 months of daily activity
-//        viewBoxHeight: 40
-//    )
-//}

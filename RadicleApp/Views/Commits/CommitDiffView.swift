@@ -28,12 +28,11 @@ struct CommitDiffView: View {
             if isLoading {
                 ProgressView("Loading commit details...")
             } else if let commit = commitDetails {
-                commitMetadataView(commit) // Extracted Commit Metadata
+                commitMetadataView(commit)
 
-                diffListView(commit) // Extracted Diff List (fixed type-checking issue)
-
+                diffListView(commit)
             } else if let errorMessage = errorMessage {
-                errorView(errorMessage) // Extracted Error Handling
+                errorView(errorMessage)
             }
         }
         .padding()
@@ -43,7 +42,7 @@ struct CommitDiffView: View {
         }
     }
 
-    // Extracted: Commit Metadata View
+    // 🔹 Extracted: Commit Metadata View
     private func commitMetadataView(_ commit: CommitDetailsResponse) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(commit.commit.summary)
@@ -67,19 +66,19 @@ struct CommitDiffView: View {
                     .foregroundColor(.blue)
             }
 
-            Text(formattedDate(commit.commit.committer.time))
+            Text(DateUtils.formatDate(commit.commit.committer.time))
                 .font(.caption)
                 .foregroundColor(.gray)
         }
         .padding(.bottom, 10)
     }
 
-    // Extracted: Diff List View (Fixed Type-Checking Issue)
+    // 🔹 Extracted: Diff List View
     private func diffListView(_ commit: CommitDetailsResponse) -> some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 10) {
-                fileListView(commit.diff?.files ?? []) // ✅ Moved `ForEach` to another function
-                
+                fileListView(commit.diff?.files ?? [])
+
                 if isLoadingMore {
                     ProgressView("Loading more files...").padding()
                 }
@@ -90,10 +89,10 @@ struct CommitDiffView: View {
         .cornerRadius(10)
     }
 
-    // Extracted: File List ForEach (Fixes Type-Checking Issue)
+    // 🔹 Extracted: File List (Replaced `FileDiffView` with `TestFileDiffView`)
     private func fileListView(_ files: [DiffFile]) -> some View {
         ForEach(files, id: \.path) { file in
-            FileDiffView(file: file)
+            TestFileDiffView(diffFile: file, language: languageForFile(file.path)) // ✅ Replaced FileDiffView
                 .onAppear {
                     if file == files.last {
                         loadMoreFiles()
@@ -102,7 +101,7 @@ struct CommitDiffView: View {
         }
     }
 
-    // Extracted: Error View
+    // 🔹 Extracted: Error View
     private func errorView(_ message: String) -> some View {
         Text("Error: \(message)")
             .foregroundColor(.red)
@@ -127,7 +126,7 @@ struct CommitDiffView: View {
         }
     }
 
-    /// Loads more files when scrolling to the bottom, optimized for large commits
+    /// Loads more files when scrolling to the bottom
     private func loadMoreFiles() {
         guard let commitDetails = commitDetails, let nextPage = commitDetails.nextPage, !isLoadingMore else { return }
         isLoadingMore = true
@@ -137,21 +136,16 @@ struct CommitDiffView: View {
                 let moreDetails = try await CommitService.shared.fetchCommitDetails(rid: rid, commit: commitId, nextPage: nextPage)
 
                 await MainActor.run {
-                    // Step 1: Safely extract existing files (avoid deep optionals)
                     var updatedFiles: [DiffFile] = commitDetails.diff?.files ?? []
-
-                    // Step 2: Append new files from API
                     if let moreFiles = moreDetails.diff?.files {
                         updatedFiles.append(contentsOf: moreFiles)
                     }
 
-                    // Step 3: Create a new `CommitDiff` object separately
                     let updatedDiff = CommitDiff(
                         files: updatedFiles,
                         stats: commitDetails.diff?.stats ?? DiffStats(filesChanged: 0, insertions: 0, deletions: 0)
                     )
 
-                    // Step 4: Create a new `CommitDetailsResponse` object separately
                     let updatedCommitDetails = CommitDetailsResponse(
                         commit: commitDetails.commit,
                         diff: updatedDiff,
@@ -159,9 +153,7 @@ struct CommitDiffView: View {
                         nextPage: moreDetails.nextPage
                     )
 
-                    // Step 5: Assign the newly created struct
                     self.commitDetails = updatedCommitDetails
-
                     isLoadingMore = false
                 }
             } catch {
@@ -172,12 +164,5 @@ struct CommitDiffView: View {
             }
         }
     }
-
-    /// Formats a Unix timestamp into a readable date
-    private func formattedDate(_ timestamp: Int) -> String {
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp))
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MMM d, yyyy HH:mm"
-        return formatter.string(from: date)
-    }
 }
+

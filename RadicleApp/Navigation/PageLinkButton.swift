@@ -1,5 +1,5 @@
 //
-//  LinkButton.swift
+//  PageLinkButton.swift
 //  RadicleApp
 //
 //  Created by bordumb on 26/02/2025.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LinkButton: View {
+struct PageLinkButton: View {
     var URL: String
     @State private var isCopied: Bool = false
 
@@ -45,5 +45,5 @@ struct LinkButton: View {
 }
 
 #Preview {
-    LinkButton(URL: "www.apple.com")
+    PageLinkButton(URL: "www.apple.com")
 }
