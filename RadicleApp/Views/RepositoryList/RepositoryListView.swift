@@ -12,43 +12,38 @@ struct RepositoryListView: View {
     @ObservedObject var apiClient = APIClient.shared  // Observe APIClient changes
 
     var body: some View {
+                
         NavigationView {
-            VStack {
-                if viewModel.isLoading {
-                    ProgressView("Loading repositories...")
-                        .padding()
-                } else if let errorMessage = viewModel.errorMessage {
-                    Text("Error: \(errorMessage)")
-                        .foregroundColor(.red)
-                        .padding()
-                } else {
-                    ScrollView {
-                        VStack(spacing: 16) {
-                            repositoryList()
-                        }
-                        .padding()
+            ScrollView {
+                VStack(spacing: 16) {
+                    
+                    NodeInfoView()
+
+                    if viewModel.isLoading {
+                        ProgressView("Loading repositories...")
+                            .padding()
+                    } else if let errorMessage = viewModel.errorMessage {
+                        Text("Error: \(errorMessage)")
+                            .foregroundColor(.red)
+                            .padding()
+                    } else {
+                        repositoryList()
                     }
                 }
+                .padding()
             }
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
-            // Black background for the nav bar
             .toolbarBackground(Color.black, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            // Ensure that the nav bar uses a dark color scheme so status bar etc. looks correct
             .toolbarColorScheme(.dark, for: .navigationBar)
-            // Insert a custom title with blue text
-            .toolbar {
-                ToolbarItem(placement: .principal) {
-                    Text("Repositories")
-                        .foregroundColor(.blue)
-                        .font(.headline)
-                }
-            }
             .background(Color.black.edgesIgnoringSafeArea(.all))
-            .onChange(of: apiClient.baseURL) { _ in
+            .onAppear {
+                viewModel.fetchRepositories()
+            }
+            .onChange(of: apiClient.baseURL) {
                 print("🔄 Server changed! Reloading repositories...")
-                viewModel.fetchRepositories() // Fetch data when server changes
+                viewModel.fetchRepositories()
             }
         }
         .preferredColorScheme(.dark)
@@ -69,9 +64,9 @@ struct RepositoryNavigationLink: View {
     var body: some View {
         NavigationLink(destination: RepositoryDetailView(repository: repository)) {
             RepositoryCardView(repository: repository)
-                .foregroundColor(.black) // Ensure it looks interactive
+                .foregroundColor(.black)
         }
-        .buttonStyle(PlainButtonStyle()) // Removes default NavigationLink styling
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

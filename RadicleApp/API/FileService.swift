@@ -43,14 +43,6 @@ class FileService: FileServiceProtocol {
         return response.entries
     }
     
-//    func fetchFileBlob(rid: String, sha: String, path: String) async throws -> RepoFile {
-//        do {
-//            return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/blob/\(sha)/\(path)")
-//        } catch let error as NSError {
-//            print("Fetch File Blob Error: \(error.localizedDescription)")
-//            throw error
-//        }
-//    }
     
     func fetchFileBlob(rid: String, sha: String, path: String) async throws -> RepoFile {
         do {

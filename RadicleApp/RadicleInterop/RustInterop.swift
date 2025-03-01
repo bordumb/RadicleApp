@@ -33,16 +33,6 @@ class GitWrapper {
         return version
     }
 
-//    func cloneRepository(url: String, path: String) -> Bool {
-//        guard let urlCString = url.cString(using: .utf8),
-//              let pathCString = path.cString(using: .utf8) else {
-//            return false
-//        }
-//
-//        let result = clone_repo(urlCString, pathCString)
-//        return result == 0
-//    }
-//
     func cloneRepository(url: String, path: String) -> Bool {
             let fileManager = FileManager.default
             let repoURL = URL(fileURLWithPath: path)

@@ -27,8 +27,25 @@ class RepositoryService: RepositoryServiceProtocol {
     }
 
     func fetchRemotes(rid: String) async throws -> [Remote] {
-        return try await APIClient.shared.fetch(endpoint: "repos/\(rid)/remotes")
+        print("➜ Starting fetchRemotes for RID: \(rid)")
+        let startTime = Date()
+        
+        do {
+            let remotes = try await APIClient.shared.fetch(endpoint: "repos/\(rid)/remotes") as [Remote]
+            let elapsed = Date().timeIntervalSince(startTime)
+            
+            print("✅ fetchRemotes succeeded in \(String(format: "%.2f", elapsed))s for RID \(rid)")
+            print("   Remotes response:\n\(remotes)\n")
+            return remotes
+            
+        } catch {
+            let elapsed = Date().timeIntervalSince(startTime)
+            print("❌ fetchRemotes failed in \(String(format: "%.2f", elapsed))s for RID \(rid)")
+            print("   Error: \(error)\n")
+            throw error
+        }
     }
+
 
     func fetchActivity(rid: String) async throws -> [Int] {
         let response: ActivityResponse = try await APIClient.shared.fetch(endpoint: "repos/\(rid)/activity")

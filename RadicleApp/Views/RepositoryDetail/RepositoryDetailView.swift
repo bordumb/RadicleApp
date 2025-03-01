@@ -13,7 +13,8 @@ struct RepositoryDetailView: View {
     let repository: RepoItem
 
     @State private var readmeContent: String = "Loading..."
-    @State private var selectedBranch: String = "main"
+    @State private var selectedBranch: String = "master"
+    @State private var remotes: [Remote] = []
     @State private var commitHistory: [CommitResponse] = []
     @State private var selectedTab: TabSelection = .files
     @EnvironmentObject var apiClient: APIClient
@@ -41,55 +42,66 @@ struct RepositoryDetailView: View {
                         .bold()
                         .foregroundColor(.white)
                     Spacer()
-                    Button(action: {
-                        UIPasteboard.general.string = repositoryURL
-                    }) {
-                        Image(systemName: "link")
-                            .foregroundColor(.blue)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.2))
-                            .clipShape(Circle())
-                    }
-                }
-                Text("🌱 Seeders: \(repository.seeding)")
-                    .foregroundColor(.white.opacity(0.7))
-                HStack {
-                    Text("Branch:")
-                        .foregroundColor(.white)
-                    Menu {
-                        Button("master") { selectedBranch = "master" }
-                        ForEach(commitHistory.map { $0.id.prefix(7) }, id: \.self) { commitID in
-                            Button(commitID) { selectedBranch = String(commitID) }
-                        }
-                    } label: {
-                        Text(selectedBranch)
-                            .padding(6)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(6)
+                    
+                    PageLinkButton(URL: repositoryURL)
+                    
+                    HStack(spacing: 4) {
+                        Icon(name: .radicleSeed, size: 16)
+                        Text("\(repository.seeding)")
+                            .font(.system(.caption, design: .monospaced))
                             .foregroundColor(.white)
                     }
                 }
-                let selectedCommitSHA = selectedBranch == "master" ? latestCommitSHA : selectedBranch
-                if let commit = commitHistory.first(where: { $0.id == selectedCommitSHA }) {
-                    Text("Latest Commit: \(commit.id.prefix(7)) - \(commit.summary)")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
+
+                if !remotes.isEmpty {
+                    VStack(alignment: .leading, spacing: 8) {
+                        // 🔹 Branch Selector Dropdown
+                        RemoteSelectorDropdown(
+                            selectedBranch: $selectedBranch,
+                            remotes: remotes
+                        )
+
+                        // 🔹 Commit Details View (Only show if there's a valid commit history)
+                        if !commitHistory.isEmpty {
+                            RemoteCommitDetails(
+                                selectedBranch: $selectedBranch,
+                                commitHistory: commitHistory
+                            )
+                        } else {
+                            Text("No commits found")
+                                .foregroundColor(.gray)
+                                .padding()
+                        }
+                    }
+                } else {
+                    Text("Loading Remotes...")
                 }
+
+                
                 HStack {
                     Button(action: { selectedTab = .files }) {
-                        Text("Files")
-                            .foregroundColor(selectedTab == .files ? .black : .white)
-                            .padding()
-                            .background(selectedTab == .files ? Color.white : Color.gray.opacity(0.2))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        HStack {
+                            Icon(name: .file, size: 16, color: selectedTab == .files ? .black : .white) // Explicit color application
+                            Text("Files")
+                        }
+                        .padding()
+                        .background(selectedTab == .files ? Color.white : Color.gray.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
+                    .foregroundColor(selectedTab == .files ? .black : .white) // Ensure text and icon color updates
+
                     Button(action: { selectedTab = .commits }) {
-                        Text("Commits")
-                            .foregroundColor(selectedTab == .commits ? .black : .white)
-                            .padding()
-                            .background(selectedTab == .commits ? Color.white : Color.gray.opacity(0.2))
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                        HStack {
+                            Icon(name: .commit, size: 16, color: selectedTab == .commits ? .black : .white) // Explicit color application
+                            Text("Commits")
+                        }
+                        .padding()
+                        .background(selectedTab == .commits ? Color.white : Color.gray.opacity(0.2))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
+                    .foregroundColor(selectedTab == .commits ? .black : .white) // Ensure text and icon color updates
+
+
                 }
                 .padding(.vertical, 6)
                 if selectedTab == .files {
@@ -154,6 +166,7 @@ struct RepositoryDetailView: View {
         .task {
             await fetchReadme()
             await fetchCommits()
+            await fetchRemotes()
         }
     }
     // 📥 Fetch README Content
@@ -172,6 +185,14 @@ struct RepositoryDetailView: View {
             commitHistory = try await CommitService.shared.fetchCommits(rid: repository.id)
         } catch {
             commitHistory = []
+        }
+    }
+    
+    func fetchRemotes() async {
+        do {
+            self.remotes = try await RepositoryService.shared.fetchRemotes(rid: repository.id)
+        } catch {
+            print("Error loading remotes: \(error)")
         }
     }
 

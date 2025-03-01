@@ -12,6 +12,7 @@
 		1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068512D6BF2A5007DEDEE /* libz.tbd */; };
 		1C6068542D6BF2AF007DEDEE /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C6068532D6BF2AF007DEDEE /* libiconv.tbd */; };
 		1C6069172D6D5B2D007DEDEE /* Sourceful in Frameworks */ = {isa = PBXBuildFile; productRef = 1C6069162D6D5B2D007DEDEE /* Sourceful */; };
+		1C6069982D6FA44D007DEDEE /* SwiftSVG in Frameworks */ = {isa = PBXBuildFile; productRef = 1C6069972D6FA44D007DEDEE /* SwiftSVG */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -84,6 +85,7 @@
 				1C6068522D6BF2A5007DEDEE /* libz.tbd in Frameworks */,
 				1C60679D2D6BA5B4007DEDEE /* Heartwood.xcframework in Frameworks */,
 				1C60679B2D6B9A8A007DEDEE /* MarkdownUI in Frameworks */,
+				1C6069982D6FA44D007DEDEE /* SwiftSVG in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,6 +161,7 @@
 			packageProductDependencies = (
 				1C60679A2D6B9A8A007DEDEE /* MarkdownUI */,
 				1C6069162D6D5B2D007DEDEE /* Sourceful */,
+				1C6069972D6FA44D007DEDEE /* SwiftSVG */,
 			);
 			productName = RadicleApp;
 			productReference = 1C4E7FDE2D6248FF00493741 /* RadicleApp.app */;
@@ -245,6 +248,7 @@
 			packageReferences = (
 				1C6067992D6B9A0D007DEDEE /* XCRemoteSwiftPackageReference "MarkdownUI" */,
 				1C6069152D6D5A8E007DEDEE /* XCRemoteSwiftPackageReference "Sourceful" */,
+				1C6069962D6FA432007DEDEE /* XCRemoteSwiftPackageReference "SwiftSVG" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1C4E7FDF2D6248FF00493741 /* Products */;
@@ -649,6 +653,14 @@
 				minimumVersion = 0.4.0;
 			};
 		};
+		1C6069962D6FA432007DEDEE /* XCRemoteSwiftPackageReference "SwiftSVG" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mchoe/SwiftSVG";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -661,6 +673,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 1C6069152D6D5A8E007DEDEE /* XCRemoteSwiftPackageReference "Sourceful" */;
 			productName = Sourceful;
+		};
+		1C6069972D6FA44D007DEDEE /* SwiftSVG */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1C6069962D6FA432007DEDEE /* XCRemoteSwiftPackageReference "SwiftSVG" */;
+			productName = SwiftSVG;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
